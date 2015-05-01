@@ -165,9 +165,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if ((key == GLFW_KEY_F && action == GLFW_PRESS)||(key == GLFW_KEY_F && action == GLFW_REPEAT)) w1TZ += 0.1;		//Nah
 
     //Skalierung
-    if (key == GLFW_KEY_Z) {if(w1SX>=2.1)w1SX -= 0.1;}
-	if (key == GLFW_KEY_Z) {if(w1SY>=2.1)w1SY -= 0.1;}
-	if (key == GLFW_KEY_Z) {if(w1SZ>=2.1)w1SZ -= 0.1;}	//klein
+    if (key == GLFW_KEY_Z) {if(w1SX>=1.1)w1SX -= 0.1;}
+	if (key == GLFW_KEY_Z) {if(w1SY>=1.1)w1SY -= 0.1;}
+	if (key == GLFW_KEY_Z) {if(w1SZ>=1.1)w1SZ -= 0.1;}	//klein
 
 	if (key == GLFW_KEY_H) {w1SX += 0.1;}
 	if (key == GLFW_KEY_H) {w1SY += 0.1;}
