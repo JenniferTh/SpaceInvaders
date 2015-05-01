@@ -201,17 +201,16 @@ void Preview() {
 
 //  glRotated(alpha_, 0, 2, 1);
 //  alpha_ += 2;
-
-  /*SetMaterialColor(3, 1, 0, 3);
-  DrawSphere(Vec3( 5, 0, 0), 2);
-  SetMaterialColor(3, 1, 1, 3);
-  DrawSphere(Vec3(-5, 0, 0), 2);
-  SetMaterialColor(3, 0, 0, 3);
-  DrawSphere(Vec3( 0, 5, 0), 2);
-
-  SetMaterialColor(1, 1, 0, 0);
-  SetMaterialColor(2, 0, 1, 0);*/
   drawCube(2);
+
+  //TestSection
+  /*punktGg.RotateX(90);
+  const char x = punktGg.p[0];
+  const char y = punktGg.p[1];
+  const char z = punktGg.p[2];
+  printf(""+ x);
+  printf(" "+y);
+  printf(" "+z);*/
 }
 int main() {
   GLFWwindow* window = NULL;
