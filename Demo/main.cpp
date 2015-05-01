@@ -155,6 +155,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_S) alpha_2 += w1RSpeed;	//Vorne drehen
     if (key == GLFW_KEY_A) alpha_3 += w1RSpeed;	//Links drehen
     if (key == GLFW_KEY_D) alpha_4 += w1RSpeed;	//Rechts drehen
+
     //Translation
     if ((key == GLFW_KEY_UP && action == GLFW_PRESS)||(key == GLFW_KEY_UP && action == GLFW_REPEAT)) 	w1TY += 1;		//Hoch
     if ((key == GLFW_KEY_DOWN && action == GLFW_PRESS)||(key == GLFW_KEY_DOWN && action == GLFW_REPEAT)) 	w1TY -= 1;		//Runter
@@ -162,10 +163,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if ((key == GLFW_KEY_RIGHT && action == GLFW_PRESS)||(key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)) w1TX += 1;		//Rechts
     if ((key == GLFW_KEY_R && action == GLFW_PRESS)||(key == GLFW_KEY_R && action == GLFW_REPEAT)) w1TZ -= 0.1;		//Weg
     if ((key == GLFW_KEY_F && action == GLFW_PRESS)||(key == GLFW_KEY_F && action == GLFW_REPEAT)) w1TZ += 0.1;		//Nah
-    //Skalierung
-    if (key == GLFW_KEY_Z && action == GLFW_REPEAT) w1SX -= 1.1; w1SY -= 1.1; w1SZ -= 1.1;		//klein
-    if (key == GLFW_KEY_H && action == GLFW_REPEAT) w1SX += 1.1; w1SY += 1.1; w1SZ += 1.1;		//Groﬂ
 
+    //Skalierung
+    if (key == GLFW_KEY_Z) {if(w1SX>=2.1)w1SX -= 0.1;}
+	if (key == GLFW_KEY_Z) {if(w1SY>=2.1)w1SY -= 0.1;}
+	if (key == GLFW_KEY_Z) {if(w1SZ>=2.1)w1SZ -= 0.1;}	//klein
+
+	if (key == GLFW_KEY_H) {w1SX += 0.1;}
+	if (key == GLFW_KEY_H) {w1SY += 0.1;}
+	if (key == GLFW_KEY_H) {w1SZ += 0.1;}	//Groﬂ
     //Deckel
     Vec3 add(0, -2, 2);
     Vec3 add2(0, 0, 0);
