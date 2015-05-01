@@ -176,10 +176,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     Vec3 add(0, -2, 2);
     Vec3 add2(0, 0, 0);
 
-    if (key == GLFW_KEY_O) punktHh +=add;
-    if (key == GLFW_KEY_O) punktGg +=add;
-    if (key == GLFW_KEY_C) punktHh -=add;
-    if (key == GLFW_KEY_C) punktGg -=add;
+    if (key == GLFW_KEY_O) punktHh -=add;
+    if (key == GLFW_KEY_O) punktGg -=add;
+    if (key == GLFW_KEY_C) punktHh +=add;
+    if (key == GLFW_KEY_C) punktGg +=add;
 
 }
 
