@@ -19,8 +19,6 @@ double winkelDeckel = 0;
 double w1RSpeed = 4;
 static double alpha_1 = 0;
 static double alpha_2 = 0;
-static double alpha_3 = 0;
-static double alpha_4 = 0;
 //Translation Würfel
 double w1TX = 0;
 double w1TY = 0;
@@ -33,11 +31,6 @@ double s1TZ = 0;
 double w1SX = 1;
 double w1SY = 1;
 double w1SZ = 1;
-/*
-Vec3 punktCc(0, 2, 0);
-Vec3 punktEe(2, 2, 0);
-Vec3 punktGg(0, 2, 2);
-Vec3 punktHh(2, 2, 2);*/
 
 // draw a sphere composed of triangles
 void DrawSphere(const Vec3& ctr, double r){
@@ -203,10 +196,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_K) s1TY -= 0.1;
 
 	//Rotation
-    if (key == GLFW_KEY_W) alpha_1 += w1RSpeed;	//Hinten drehen
-    if (key == GLFW_KEY_S) alpha_2 += w1RSpeed;	//Vorne drehen
-    if (key == GLFW_KEY_A) alpha_3 += w1RSpeed;	//Links drehen
-    if (key == GLFW_KEY_D) alpha_4 += w1RSpeed;	//Rechts drehen
+    if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed;	//Hinten drehen
+    if (key == GLFW_KEY_A) alpha_2 -= w1RSpeed;	//Vorne drehen
+    if (key == GLFW_KEY_S) alpha_1 += w1RSpeed;	//Links drehen
+    if (key == GLFW_KEY_D) alpha_2 += w1RSpeed;	//Rechts drehen
 
     //Translation
     if ((key == GLFW_KEY_UP && action == GLFW_PRESS)||(key == GLFW_KEY_UP && action == GLFW_REPEAT)) 	w1TY += 1;		//Hoch
@@ -246,10 +239,9 @@ void Preview() {
 		glTranslated(0, 0, -10.0);      // Move 10 units backwards in z,
 										// since camera is at origin
 		//Rotation
-		glRotated(alpha_1, -1, 0, 0);
-		glRotated(alpha_2, 1, 0, 0);
-		glRotated(alpha_3, 0, 1, 0);
-		glRotated(alpha_4, 0, -1, 0);
+		glRotated(alpha_1, 1, 0, 0);
+		glRotated(alpha_2, 0, 1, 0);
+
 		//Translation
 		glTranslated(w1TX, w1TY, w1TZ);
 		//Skalierung
@@ -284,9 +276,8 @@ int main() {
     return -1;
   }
 
+  glfwMakeContextCurrent(window);
 
-
-  glfwSetKeyCallback(window, key_callback);
   while(!glfwWindowShouldClose(window)) {
     // switch on lighting (or you don't see anything)
     InitLighting();
@@ -297,8 +288,10 @@ int main() {
 
     // draw the scene
     Preview();
+
+    //Listener
+    glfwSetKeyCallback(window, key_callback);
     glfwGetCursorPos(window, &xpos, &ypos);
-    glfwMakeContextCurrent(window);
 
     // make it appear (before this, it's hidden in the rear buffer)
     glfwSwapBuffers(window);
