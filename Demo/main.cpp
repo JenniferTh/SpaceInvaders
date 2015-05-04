@@ -23,6 +23,10 @@ static double alpha_4 = 0;
 double w1TX = 0;
 double w1TY = 0;
 double w1TZ = 0;
+
+double s1TX = 5;
+double s1TY = 0;
+double s1TZ = 0;
 //Skalierung
 double w1SX = 1;
 double w1SY = 1;
@@ -197,6 +201,12 @@ void drawCube(int length){
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
+	//Translation sphere
+	if (key == GLFW_KEY_J) s1TX -= 0.1;
+	if (key == GLFW_KEY_L) s1TX += 0.1;
+	if (key == GLFW_KEY_I) s1TY += 0.1;
+	if (key == GLFW_KEY_K) s1TY -= 0.1;
+
 	//Rotation
     if (key == GLFW_KEY_W) alpha_1 += w1RSpeed;	//Hinten drehen
     if (key == GLFW_KEY_S) alpha_2 += w1RSpeed;	//Vorne drehen
@@ -250,7 +260,7 @@ void Preview() {
   //  alpha_ += 2;
   drawCube(2);
   SetMaterialColor(3, 1, 0, 0);
-  DrawSphere(Vec3( 5, 0, 0), .5);
+  DrawSphere(Vec3( s1TX, s1TY, s1TZ), .5);
 
   //Test
 
