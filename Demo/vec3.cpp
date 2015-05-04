@@ -127,7 +127,7 @@ void Vec3::RotateX(double angle){
 	double tempX = p[0];
 	double tempY = ((p[1])*cosa)-(p[2]*sina);
 	double tempZ = ((p[1])*sina)+(p[2]*cosa);
-	const Vec3 temp(tempX,tempY,tempZ);
+	//const Vec3 temp(tempX,tempY,tempZ);
 	p[1] = tempY;
 	p[2] = tempZ;
 }

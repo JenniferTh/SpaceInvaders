@@ -12,6 +12,7 @@ using namespace std;
 //static double alpha_ = 0;
 static double window_width_ = 1024;
 static double window_height_ = 768;
+double winkelDeckel = 0;
 //Rotation
 double w1RSpeed = 4;
 static double alpha_1 = 0;
@@ -26,11 +27,11 @@ double w1TZ = 0;
 double w1SX = 1;
 double w1SY = 1;
 double w1SZ = 1;
-
+/*
 Vec3 punktCc(0, 2, 0);
 Vec3 punktEe(2, 2, 0);
 Vec3 punktGg(0, 2, 2);
-Vec3 punktHh(2, 2, 2);
+Vec3 punktHh(2, 2, 2);*/
 
 // draw a sphere composed of triangles
 void DrawSphere(const Vec3& ctr, double r){
@@ -162,25 +163,31 @@ void drawCube(int length){
 	Vec3 punktH(length,length,length);
 
 	//Alle Flächen des Würfels zeichnen (Ohne Deckel)
-	drawSquare(punktA, punktD, punktG, punktC);
-	SetMaterialColor(1, 1, 0, 0);
-	SetMaterialColor(2, 0, 0, 1);
-	drawSquare(punktB, punktF, punktD, punktA);
-	SetMaterialColor(2, 1, 0, 0);
-	SetMaterialColor(1, 0, 0, 1);
-	drawSquare(punktA, punktB, punktE, punktC);
-	SetMaterialColor(2, 1, 0, 0);
-	SetMaterialColor(1, 0, 0, 1);
-	drawSquare(punktF, punktH, punktE, punktB);
-	SetMaterialColor(2, 1, 0, 0);
-	SetMaterialColor(1, 0, 0, 1);
-	drawSquare(punktF, punktD, punktG, punktH);
-	SetMaterialColor(1, 1, 0, 0);
-	SetMaterialColor(2, 0, 0, 1);
 	glPushMatrix();
-	drawSquare(punktCc, punktEe, punktHh, punktGg);
-	SetMaterialColor(1, 1, 0, 0);
-	SetMaterialColor(2, 0, 0, 1);
+		drawSquare(punktA, punktD, punktG, punktC);
+		SetMaterialColor(1, 1, 0, 0);
+		SetMaterialColor(2, 0, 0, 1);
+		drawSquare(punktB, punktF, punktD, punktA);
+		SetMaterialColor(2, 1, 0, 0);
+		SetMaterialColor(1, 0, 0, 1);
+		drawSquare(punktA, punktB, punktE, punktC);
+		SetMaterialColor(2, 1, 0, 0);
+		SetMaterialColor(1, 0, 0, 1);
+		drawSquare(punktF, punktH, punktE, punktB);
+		SetMaterialColor(2, 1, 0, 0);
+		SetMaterialColor(1, 0, 0, 1);
+		drawSquare(punktF, punktD, punktG, punktH);
+		SetMaterialColor(1, 1, 0, 0);
+		SetMaterialColor(2, 0, 0, 1);
+	glPopMatrix();
+	glPushMatrix();
+		glTranslated(0, -2, 2);
+		glRotated(winkelDeckel, 1, 0, 0);
+		glTranslated(0, 2, -2);
+		drawSquare(punktC, punktE, punktH, punktG);
+		SetMaterialColor(1, 1, 0, 0);
+		SetMaterialColor(2, 0, 0, 1);
+	glPopMatrix();
 
 	//Nur Für Aufgabe 2a)
 	w1TX = -1;
@@ -188,8 +195,7 @@ void drawCube(int length){
 	w1TZ = -1;
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
 	//Rotation
     if (key == GLFW_KEY_W) alpha_1 += w1RSpeed;	//Hinten drehen
@@ -213,14 +219,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_H) {w1SX += 0.1;}
 	if (key == GLFW_KEY_H) {w1SY += 0.1;}
 	if (key == GLFW_KEY_H) {w1SZ += 0.1;}	//Groß
-    //Deckel
-    Vec3 add(0, -1, 1);
-    Vec3 add2(0, 0, 0);
 
-    if (key == GLFW_KEY_O) punktHh -=add;
-    if (key == GLFW_KEY_O) punktGg -=add;
-    if (key == GLFW_KEY_C) punktHh +=add;
-    if (key == GLFW_KEY_C) punktGg +=add;
+	//Deckel
+
+    if (key == GLFW_KEY_O) {
+    	winkelDeckel -=5;
+    }
+    if (key == GLFW_KEY_C) {
+     	 winkelDeckel +=5;
+     }
 }
 
 void Preview() {
@@ -245,15 +252,8 @@ void Preview() {
   SetMaterialColor(3, 1, 0, 0);
   DrawSphere(Vec3( 5, 0, 0), .5);
 
-  //TestSection
-  /*punktEe.Print("a");
-  punktCc.Print("b");
+  //Test
 
-  punktEe.RotateX(45);
-  punktCc.RotateX(45);
-
-  punktEe.Print("a'");
-  punktCc.Print("b'");*/
 }
 int main() {
   GLFWwindow* window = NULL;
