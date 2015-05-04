@@ -27,9 +27,10 @@ double w1SX = 1;
 double w1SY = 1;
 double w1SZ = 1;
 
+Vec3 punktCc(0, 2, 0);
+Vec3 punktEe(2, 2, 0);
 Vec3 punktGg(0, 2, 2);
 Vec3 punktHh(2, 2, 2);
-
 
 void SetMaterialColor(int side, double r, double g, double b) {
   float	amb[4], dif[4], spe[4];
@@ -137,7 +138,7 @@ void drawCube(int length){
 	SetMaterialColor(1, 1, 0, 0);
 	SetMaterialColor(2, 0, 0, 1);
 	glPushMatrix();
-	drawSquare(punktC, punktE, punktHh, punktGg);
+	drawSquare(punktCc, punktEe, punktHh, punktGg);
 	SetMaterialColor(1, 1, 0, 0);
 	SetMaterialColor(2, 0, 0, 1);
 
@@ -173,21 +174,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_H) {w1SY += 0.1;}
 	if (key == GLFW_KEY_H) {w1SZ += 0.1;}	//Groﬂ
     //Deckel
-    Vec3 add(0, -2, 2);
+    Vec3 add(0, -1, 1);
     Vec3 add2(0, 0, 0);
 
     if (key == GLFW_KEY_O) punktHh -=add;
     if (key == GLFW_KEY_O) punktGg -=add;
     if (key == GLFW_KEY_C) punktHh +=add;
     if (key == GLFW_KEY_C) punktGg +=add;
-
 }
 
 void Preview() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();					// Reset The Current Modelview Matrix
   glTranslated(0, 0, -10.0);      	// Move 10 units backwards in z,
-                                  	// since camera is at origin
+									// since camera is at origin
 
   //Rotation
   glRotated(alpha_1, -1, 0, 0);
@@ -199,18 +199,19 @@ void Preview() {
   //Skalierung
   glScaled(w1SX, w1SY, w1SZ);
 
-//  glRotated(alpha_, 0, 2, 1);
-//  alpha_ += 2;
+  //  glRotated(alpha_, 0, 2, 1);
+  //  alpha_ += 2;
   drawCube(2);
 
   //TestSection
-  /*punktGg.RotateX(90);
-  const char x = punktGg.p[0];
-  const char y = punktGg.p[1];
-  const char z = punktGg.p[2];
-  printf(""+ x);
-  printf(" "+y);
-  printf(" "+z);*/
+  /*punktEe.Print("a");
+  punktCc.Print("b");
+
+  punktEe.RotateX(45);
+  punktCc.RotateX(45);
+
+  punktEe.Print("a'");
+  punktCc.Print("b'");*/
 }
 int main() {
   GLFWwindow* window = NULL;
@@ -251,7 +252,7 @@ int main() {
 
   glfwTerminate();
 
-  printf("Goodbye!\n");
+  //printf("Goodbye!\n");
 
   return 0;
 }
