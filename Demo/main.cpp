@@ -3,12 +3,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <windows.h>
+#include <iostream>
 
 #include "vec3.hpp"
 
 #include <iostream>
 using namespace std;
-
+static double xpos, ypos; //Maus Position
 //static double alpha_ = 0;
 static double window_width_ = 1024;
 static double window_height_ = 768;
@@ -19,11 +21,11 @@ static double alpha_1 = 0;
 static double alpha_2 = 0;
 static double alpha_3 = 0;
 static double alpha_4 = 0;
-//Translation
+//Translation Würfel
 double w1TX = 0;
 double w1TY = 0;
 double w1TZ = 0;
-
+//Translation Kugel
 double s1TX = 5;
 double s1TY = 0;
 double s1TZ = 0;
@@ -146,9 +148,9 @@ void InitLighting() {
   glLoadIdentity();
 }
 // draw the entire scene
-void drawSquare(Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
+void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glBegin(GL_QUADS);
-	glNormal3f( 0, 0, 1);
+	glNormal3d( 0, 0, 1);
 	glVertex3dv( seite1.p);
 	glVertex3dv( seite2.p);
 	glVertex3dv( seite3.p);
@@ -157,20 +159,19 @@ void drawSquare(Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 }
 void drawCube(int length){
 	//Festlegen der Position der Kanten
-	Vec3 punktA(0, 0, 0);
-	Vec3 punktB(length, 0, 0);
-	Vec3 punktC(0, length, 0);
-	Vec3 punktD(0, 0, length);
-	Vec3 punktE(length, length, 0);
-	Vec3 punktF(length, 0, length);
-	Vec3 punktG(0, length, length);
-	Vec3 punktH(length,length,length);
+	Vec3 punktA(-length/2, -length/2, -length/2);
+	Vec3 punktB(length/2, -length/2, -length/2);
+	Vec3 punktC(-length/2, length/2, -length/2);
+	Vec3 punktD(-length/2, -length/2, length/2);
+	Vec3 punktE(length/2, length/2, -length/2);
+	Vec3 punktF(length/2, -length/2, length/2);
+	Vec3 punktG(-length/2, length/2, length/2);
+	Vec3 punktH(length/2,length/2,length/2);
 
 	//Alle Flächen des Würfels zeichnen (Ohne Deckel)
-	glPushMatrix();
 		drawSquare(punktA, punktD, punktG, punktC);
-		SetMaterialColor(1, 1, 0, 0);
 		SetMaterialColor(2, 0, 0, 1);
+		SetMaterialColor(1, 1, 0, 0);
 		drawSquare(punktB, punktF, punktD, punktA);
 		SetMaterialColor(2, 1, 0, 0);
 		SetMaterialColor(1, 0, 0, 1);
@@ -181,22 +182,16 @@ void drawCube(int length){
 		SetMaterialColor(2, 1, 0, 0);
 		SetMaterialColor(1, 0, 0, 1);
 		drawSquare(punktF, punktD, punktG, punktH);
-		SetMaterialColor(1, 1, 0, 0);
 		SetMaterialColor(2, 0, 0, 1);
-	glPopMatrix();
+		SetMaterialColor(1, 1, 0, 0);
 	glPushMatrix();
-		glTranslated(0, -2, 2);
+		glTranslated(0, 1, 1);
 		glRotated(winkelDeckel, 1, 0, 0);
-		glTranslated(0, 2, -2);
+		glTranslated(0, -1, -1);
 		drawSquare(punktC, punktE, punktH, punktG);
 		SetMaterialColor(1, 1, 0, 0);
 		SetMaterialColor(2, 0, 0, 1);
 	glPopMatrix();
-
-	//Nur Für Aufgabe 2a)
-	w1TX = -1;
-	w1TY = -1;
-	w1TZ = -1;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -233,34 +228,42 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	//Deckel
 
     if (key == GLFW_KEY_O) {
-    	winkelDeckel -=5;
+    	 if(winkelDeckel<=100){
+    		winkelDeckel +=2;
+    	 }
     }
     if (key == GLFW_KEY_C) {
-     	 winkelDeckel +=5;
+     	 if(winkelDeckel>=2){
+     		winkelDeckel -=2;
+     	 }
      }
 }
 
 void Preview() {
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();					// Reset The Current Modelview Matrix
-  glTranslated(0, 0, -10.0);      	// Move 10 units backwards in z,
-									// since camera is at origin
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();					// Reset The Current Modelview Matrix
+	glPushMatrix();
+		glTranslated(0, 0, -10.0);      // Move 10 units backwards in z,
+										// since camera is at origin
+		//Rotation
+		glRotated(alpha_1, -1, 0, 0);
+		glRotated(alpha_2, 1, 0, 0);
+		glRotated(alpha_3, 0, 1, 0);
+		glRotated(alpha_4, 0, -1, 0);
+		//Translation
+		glTranslated(w1TX, w1TY, w1TZ);
+		//Skalierung
+		glScaled(w1SX, w1SY, w1SZ);
 
-  //Rotation
-  glRotated(alpha_1, -1, 0, 0);
-  glRotated(alpha_2, 1, 0, 0);
-  glRotated(alpha_3, 0, 1, 0);
-  glRotated(alpha_4, 0, -1, 0);
-  //Translation
-  glTranslated(w1TX, w1TY, w1TZ);
-  //Skalierung
-  glScaled(w1SX, w1SY, w1SZ);
-
-  //  glRotated(alpha_, 0, 2, 1);
-  //  alpha_ += 2;
-  drawCube(2);
-  SetMaterialColor(3, 1, 0, 0);
-  DrawSphere(Vec3( s1TX, s1TY, s1TZ), .5);
+		//  glRotated(alpha_, 0, 2, 1);
+		//  alpha_ += 2;
+		drawCube(2);
+	glPopMatrix();
+	glPushMatrix();
+		glTranslated(-15, 9.5, -10);
+		SetMaterialColor(3, 1, 0, 0);
+		DrawSphere(Vec3( (xpos*30/window_width_), (-ypos*20/window_height_), 0), 1);
+	glPopMatrix();
 
   //Test
 
@@ -281,7 +284,7 @@ int main() {
     return -1;
   }
 
-  glfwMakeContextCurrent(window);
+
 
   glfwSetKeyCallback(window, key_callback);
   while(!glfwWindowShouldClose(window)) {
@@ -294,6 +297,8 @@ int main() {
 
     // draw the scene
     Preview();
+    glfwGetCursorPos(window, &xpos, &ypos);
+    glfwMakeContextCurrent(window);
 
     // make it appear (before this, it's hidden in the rear buffer)
     glfwSwapBuffers(window);

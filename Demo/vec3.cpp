@@ -120,17 +120,6 @@ void Vec3::MinMaxExpand(Vec3& min, Vec3& max) const {
   }
 }
 
-void Vec3::RotateX(double angle){
-	double radianAngle = (angle)* M_PI /180.0;
-	double sina = sin(radianAngle);
-	double cosa = cos(radianAngle);
-	double tempX = p[0];
-	double tempY = ((p[1])*cosa)-(p[2]*sina);
-	double tempZ = ((p[1])*sina)+(p[2]*cosa);
-	//const Vec3 temp(tempX,tempY,tempZ);
-	p[1] = tempY;
-	p[2] = tempZ;
-}
 
 void Vec3::Print(char *c = NULL) const {
   if(c == NULL)

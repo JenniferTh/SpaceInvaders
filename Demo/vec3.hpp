@@ -96,7 +96,6 @@ public:
 	double DotXY(const Vec3& a) const;
 	double CrossXY(const Vec3& a) const;
 	void MinMaxExpand(Vec3& min, Vec3& max) const;
-	void RotateX(const double angle);
 	void Normalize();
 	void Print(char *c) const;
 	void FScan(FILE *fp);
