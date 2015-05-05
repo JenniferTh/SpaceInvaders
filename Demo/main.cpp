@@ -244,10 +244,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     if (key == GLFW_KEY_D) alpha_2 += w1RSpeed;	//Rechts drehen
 
     //Translation
-    if ((key == GLFW_KEY_UP && action == GLFW_PRESS)||(key == GLFW_KEY_UP && action == GLFW_REPEAT)) 	w1TY += 1;		//Hoch
-    if ((key == GLFW_KEY_DOWN && action == GLFW_PRESS)||(key == GLFW_KEY_DOWN && action == GLFW_REPEAT)) 	w1TY -= 1;		//Runter
-    if ((key == GLFW_KEY_LEFT && action == GLFW_PRESS)||(key == GLFW_KEY_LEFT && action == GLFW_REPEAT)) 	w1TX -= 1;		//Links
-    if ((key == GLFW_KEY_RIGHT && action == GLFW_PRESS)||(key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)) w1TX += 1;		//Rechts
+    if ((key == GLFW_KEY_UP && action == GLFW_PRESS)||(key == GLFW_KEY_UP && action == GLFW_REPEAT)) 	w1TY += .1;		//Hoch
+    if ((key == GLFW_KEY_DOWN && action == GLFW_PRESS)||(key == GLFW_KEY_DOWN && action == GLFW_REPEAT)) 	w1TY -= .1;		//Runter
+    if ((key == GLFW_KEY_LEFT && action == GLFW_PRESS)||(key == GLFW_KEY_LEFT && action == GLFW_REPEAT)) 	w1TX -= .1;		//Links
+    if ((key == GLFW_KEY_RIGHT && action == GLFW_PRESS)||(key == GLFW_KEY_RIGHT && action == GLFW_REPEAT)) w1TX += .1;		//Rechts
     if ((key == GLFW_KEY_R && action == GLFW_PRESS)||(key == GLFW_KEY_R && action == GLFW_REPEAT)) w1TZ -= 0.1;		//Weg
     if ((key == GLFW_KEY_F && action == GLFW_PRESS)||(key == GLFW_KEY_F && action == GLFW_REPEAT)) w1TZ += 0.1;		//Nah
 
