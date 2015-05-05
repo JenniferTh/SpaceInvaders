@@ -23,10 +23,12 @@ static double alpha_2 = 0;
 double w1TX = 0;
 double w1TY = 0;
 double w1TZ = 0;
+double length = 2;
 //Translation Kugel
 double s1TX = 5;
 double s1TY = 0;
 double s1TZ = 0;
+double radius = .5;
 //Skalierung
 double w1SX = 1;
 double w1SY = 1;
@@ -70,6 +72,12 @@ void DrawSphere(const Vec3& ctr, double r){
     }
     glEnd();
   }
+}
+
+bool kollision(){
+	bool kol = false;
+
+	return kol;
 }
 
 void SetMaterialColor(int side, double r, double g, double b) {
@@ -143,14 +151,14 @@ void InitLighting() {
 // draw the entire scene
 void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
 	glBegin(GL_QUADS);
-	glNormal3d( 0, 0, 1);
+	//glNormal3d( 0, 0, 1);
 	glVertex3dv( seite1.p);
 	glVertex3dv( seite2.p);
 	glVertex3dv( seite3.p);
 	glVertex3dv( seite4.p);
 	glEnd();
 }
-void drawCube(int length){
+void drawCube(){
 	//Festlegen der Position der Kanten
 	Vec3 punktA(-length/2, -length/2, -length/2);
 	Vec3 punktB(length/2, -length/2, -length/2);
@@ -161,39 +169,73 @@ void drawCube(int length){
 	Vec3 punktG(-length/2, length/2, length/2);
 	Vec3 punktH(length/2,length/2,length/2);
 
+	/*Vec3 punktA(0, 0, 0);
+	Vec3 punktB(length, 0, 0);
+	Vec3 punktC(0, length, 0);
+	Vec3 punktD(0, 0, length);
+	Vec3 punktE(length, length, 0);
+	Vec3 punktF(length, 0, length);
+	Vec3 punktG(0, length, length);
+	Vec3 punktH(length,length,length);*/
+
 	//Alle Flächen des Würfels zeichnen (Ohne Deckel)
+		SetMaterialColor(1, 0, 0, 1);
+		SetMaterialColor(2, 1, 0, 0);
 		drawSquare(punktA, punktD, punktG, punktC);
-		SetMaterialColor(2, 0, 0, 1);
-		SetMaterialColor(1, 1, 0, 0);
+		SetMaterialColor(2, 1, 0, 0);
+		SetMaterialColor(1, 0, 0, 1);
 		drawSquare(punktB, punktF, punktD, punktA);
-		SetMaterialColor(2, 1, 0, 0);
-		SetMaterialColor(1, 0, 0, 1);
+		SetMaterialColor(1, 1, 0, 0);
+		SetMaterialColor(2, 0, 0, 1);
 		drawSquare(punktA, punktB, punktE, punktC);
-		SetMaterialColor(2, 1, 0, 0);
-		SetMaterialColor(1, 0, 0, 1);
+		SetMaterialColor(1, 1, 0, 0);
+		SetMaterialColor(2, 0, 0, 1);
 		drawSquare(punktF, punktH, punktE, punktB);
-		SetMaterialColor(2, 1, 0, 0);
-		SetMaterialColor(1, 0, 0, 1);
-		drawSquare(punktF, punktD, punktG, punktH);
 		SetMaterialColor(2, 0, 0, 1);
 		SetMaterialColor(1, 1, 0, 0);
+		drawSquare(punktF, punktD, punktG, punktH);
+
 	glPushMatrix();
 		glTranslated(0, 1, 1);
 		glRotated(winkelDeckel, 1, 0, 0);
 		glTranslated(0, -1, -1);
+		SetMaterialColor(2, 1, 0, 0);
+		SetMaterialColor(1, 0, 0, 1);
 		drawSquare(punktC, punktE, punktH, punktG);
-		SetMaterialColor(1, 1, 0, 0);
-		SetMaterialColor(2, 0, 0, 1);
 	glPopMatrix();
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 
 	//Translation sphere
-	if (key == GLFW_KEY_J) s1TX -= 0.1;
-	if (key == GLFW_KEY_L) s1TX += 0.1;
-	if (key == GLFW_KEY_I) s1TY += 0.1;
-	if (key == GLFW_KEY_K) s1TY -= 0.1;
+	if (key == GLFW_KEY_J) {
+		if(!kollision()){
+			s1TX -= 0.1;
+		}else{
+			printf("Kollision");
+		}
+	}
+	if (key == GLFW_KEY_L) {
+		if(!kollision()){
+			s1TX += 0.1;
+		}else{
+			printf("Kollision");
+		}
+	}
+	if (key == GLFW_KEY_I) {
+		if(!kollision()){
+			s1TX += 0.1;
+		}else{
+			printf("Kollision");
+		}
+	}
+	if (key == GLFW_KEY_K) {
+		if(!kollision()){
+			s1TY -= 0.1;
+		}else{
+			printf("Kollision");
+		}
+	}
 
 	//Rotation
     if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed;	//Hinten drehen
@@ -230,6 +272,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
      		winkelDeckel -=2;
      	 }
      }
+
+    //test
+	if (key == GLFW_KEY_Q) {
+		Vec3 pos (w1TX,w1TY,w1TZ);
+		pos.Print("Position");
+	}
 }
 
 void Preview() {
@@ -249,12 +297,13 @@ void Preview() {
 
 		//  glRotated(alpha_, 0, 2, 1);
 		//  alpha_ += 2;
-		drawCube(2);
+		drawCube();
 	glPopMatrix();
 	glPushMatrix();
 		glTranslated(-15, 9.5, -10);
 		SetMaterialColor(3, 1, 0, 0);
-		DrawSphere(Vec3( (xpos*30/window_width_), (-ypos*20/window_height_), 0), 1);
+		//DrawSphere(Vec3( (xpos*30/window_width_), (-ypos*20/window_height_), 0), radius);
+		DrawSphere(Vec3( s1TX, s1TY, s1TZ), radius);
 	glPopMatrix();
 
   //Test
@@ -270,7 +319,7 @@ int main() {
   }
 
   window = glfwCreateWindow(window_width_, window_height_,
-                            "Simple 3D Animation", NULL, NULL);
+                            "Ueberragende 3D Animation", NULL, NULL);
   if(!window) {
     glfwTerminate();
     return -1;
