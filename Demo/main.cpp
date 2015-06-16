@@ -19,7 +19,12 @@ static double alpha_2 = 0;
 double length = 2;
 //Defender
 double radius = .35;
-Vec3 defender(0,-8,10);
+Vec3 defender(-5,-8,10);
+//Defender2
+double radius2 = .35;
+Vec3 defender2(5,-3,10);
+
+
 
 	void DrawSphere(const Vec3& ctr, double r){
 	int i, j,
@@ -109,6 +114,17 @@ Vec3 defender(0,-8,10);
 		glMaterialfv(mat, GL_SPECULAR, spe);
 		glMaterialf( mat, GL_SHININESS, 20);
 	}
+	bool collide(Vec3& m1, Vec3& m2, double r1, double r2){
+		if(pow((m2.p[0]-m1.p[0]),2) + pow((m1.p[1]-m2.p[1]), 2) <= pow((r1+r2),2)){
+			return true;
+
+		}else{
+			return false;
+		}
+	}
+	void newDirection(){
+
+	}
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 		//Rotation
 		/*if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed; //Hinten drehen
@@ -136,6 +152,7 @@ Vec3 defender(0,-8,10);
 			glVertex3dv( seite4.p);
 			glEnd();
 	}
+
 	void asteroids(){
 		/*auslagern in eigene Klasse:
 		-benötigt: ungefährer Mittelpunkt und Radius
@@ -179,8 +196,18 @@ Vec3 defender(0,-8,10);
 			glTranslated(0, 0, -10);
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(defender, radius);
+			SetMaterialColor(3, .99, .1, .1);
+			DrawSphere(defender2, radius2);
 			glPopMatrix();
 		glPopMatrix();
+		defender.p[0] += 0.01;
+		defender2.p[0] -= 0.01;
+		defender2.p[1] -= 0.01;
+		if(collide(defender, defender2, radius, radius2)){
+			printf("kollidiert\n");
+		}else{
+			printf("Not\n");
+		}
 	}
 	int main() {
 		GLFWwindow* window = NULL;
