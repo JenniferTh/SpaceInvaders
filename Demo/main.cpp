@@ -20,10 +20,11 @@ double length = 2;
 //Defender
 double radius = .35;
 Vec3 defender(-5,-8,10);
+Vec3 speedKugel (0.001, 0.001, 0);
 //Defender2
-double radius2 = .35;
+double radius2 = .5;
 Vec3 defender2(5,-3,10);
-
+Vec3 speedKugel2 (-0.001, -0.001, 0);
 
 
 	void DrawSphere(const Vec3& ctr, double r){
@@ -117,12 +118,26 @@ Vec3 defender2(5,-3,10);
 	bool collide(Vec3& m1, Vec3& m2, double r1, double r2){
 		if(pow((m2.p[0]-m1.p[0]),2) + pow((m1.p[1]-m2.p[1]), 2) <= pow((r1+r2),2)){
 			return true;
-
 		}else{
 			return false;
 		}
 	}
-	void newDirection(){
+	void newDirections(){
+		double newX1Speed;
+		double newX2Speed;
+		double newY1Speed;
+		double newY2Speed;
+
+		newX1Speed = (speedKugel.p[0]*(radius-radius2) + (2* radius2 * speedKugel2.p[0])) / (radius+radius2);
+		newX2Speed = (speedKugel2.p[0]*(radius2-radius) + (2* radius * speedKugel.p[0])) / (radius+radius2);
+		newY1Speed = (speedKugel.p[1]*(radius-radius2) + (2* radius2 * speedKugel2.p[1])) / (radius+radius2);
+		newX2Speed = (speedKugel2.p[1]*(radius2-radius) + (2* radius * speedKugel.p[1])) / (radius+radius2);
+
+		speedKugel.p[0] = newX1Speed;
+		speedKugel2.p[0] = newX2Speed;
+		speedKugel.p[1] = newY1Speed;
+		speedKugel2.p[1] = newX2Speed;
+
 
 	}
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -200,11 +215,12 @@ Vec3 defender2(5,-3,10);
 			DrawSphere(defender2, radius2);
 			glPopMatrix();
 		glPopMatrix();
-		defender.p[0] += 0.01;
-		defender2.p[0] -= 0.01;
-		defender2.p[1] -= 0.01;
+		defender.p[0] += speedKugel.p[0];
+		defender2.p[0] += speedKugel2.p[0];
+		defender2.p[1] += speedKugel2.p[1];
 		if(collide(defender, defender2, radius, radius2)){
 			printf("kollidiert\n");
+			newDirections();
 		}else{
 			printf("Not\n");
 		}
