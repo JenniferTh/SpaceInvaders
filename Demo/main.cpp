@@ -136,7 +136,32 @@ Vec3 defender(0,-8,10);
 			glVertex3dv( seite4.p);
 			glEnd();
 	}
-
+	void asteroids(){
+		/*auslagern in eigene Klasse:
+		-benötigt: ungefährer Mittelpunkt und Radius
+		*/
+		glBegin(GL_TRIANGLE_FAN);
+	    glColor3f(1,1,0);
+	    glVertex3f(0,0,1);
+	    glColor3f(1,0,0);
+	    glVertex3f(0,.5,1);
+	    glVertex3f(1,0,1);
+	    glColor3f(0,0,1);
+	    glColor3f(0,0,1);
+	    glVertex3f(0,-.81,1);
+	    glVertex3f(0,-1,1);
+	    glColor3f(0,0,1);
+	    glVertex3f(-.8,-1,1);
+	    glColor3f(1,0,0);
+	    glVertex3f(0,-0.5,1);
+	    glColor3f(1,0,0);
+	    glVertex3f(1,-1,1);
+	    glColor3f(1,0,0);
+	    glVertex3f(-1,0,1);
+	    glColor3f(1,0,0);
+	    glVertex3f(0,1,1);
+		glEnd();
+	}
 	void Preview() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
@@ -148,8 +173,9 @@ Vec3 defender(0,-8,10);
 			glPushMatrix();
 			//Spielfeld
 			SetMaterialColor(1, 1, 1, 1);
-			drawSquare(Vec3(-9,-9,0), Vec3(9,-9,0), Vec3(9,9,0), Vec3(-9,9,0));
-			//Defender
+			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
+			//Asteroit
+			asteroids();
 			glTranslated(0, 0, -10);
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(defender, radius);
