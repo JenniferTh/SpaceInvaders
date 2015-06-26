@@ -8,6 +8,8 @@
 #include "vec3.hpp"
 #include <iostream>
 #include <time.h>
+#include <vector>
+
 using namespace std;
 static double window_width_ = 1024;
 static double window_height_ = 768;
@@ -17,14 +19,13 @@ double w1RSpeed = 4;
 static double alpha_1 = 0;
 static double alpha_2 = 0;
 double length = 2;
-//Defender
+
+//Asteriods
+vector<Vec3> asteriods;
+vector<Vec3> asteriodsSpeed;
 double radius = .35;
-Vec3 defender(-5,-8,10);
-Vec3 speedKugel (0.001, 0.001, 0);
-//Defender2
 double radius2 = .5;
-Vec3 defender2(5,-3,10);
-Vec3 speedKugel2 (-0.001, -0.001, 0);
+
 
 
 	void DrawSphere(const Vec3& ctr, double r){
@@ -115,45 +116,56 @@ Vec3 speedKugel2 (-0.001, -0.001, 0);
 		glMaterialfv(mat, GL_SPECULAR, spe);
 		glMaterialf( mat, GL_SHININESS, 20);
 	}
-	bool collide(Vec3& m1, Vec3& m2, double r1, double r2){
+	bool collide(Vec3 m1, Vec3 m2, double r1, double r2){
 		if(pow((m2.p[0]-m1.p[0]),2) + pow((m1.p[1]-m2.p[1]), 2) <= pow((r1+r2),2)){
 			return true;
 		}else{
 			return false;
 		}
 	}
-	void newDirections(){
+	void newDirections(int i){
 		double newX1Speed;
 		double newX2Speed;
 		double newY1Speed;
 		double newY2Speed;
 
-		newX1Speed = (speedKugel.p[0]*(radius-radius2) + (2* radius2 * speedKugel2.p[0])) / (radius+radius2);
-		newX2Speed = (speedKugel2.p[0]*(radius2-radius) + (2* radius * speedKugel.p[0])) / (radius+radius2);
-		newY1Speed = (speedKugel.p[1]*(radius-radius2) + (2* radius2 * speedKugel2.p[1])) / (radius+radius2);
-		newX2Speed = (speedKugel2.p[1]*(radius2-radius) + (2* radius * speedKugel.p[1])) / (radius+radius2);
+		newX1Speed = (asteriodsSpeed[i].p[0]*(radius-radius2) + (2* radius2 * asteriodsSpeed[i+1].p[0])) / (radius+radius2);
+		newX2Speed = (asteriodsSpeed[i+1].p[0]*(radius2-radius) + (2* radius * asteriodsSpeed[i].p[0])) / (radius+radius2);
+		newY1Speed = (asteriodsSpeed[i].p[1]*(radius-radius2) + (2* radius2 * asteriodsSpeed[i+1].p[1])) / (radius+radius2);
+		newY2Speed = (asteriodsSpeed[i+1].p[1]*(radius2-radius) + (2* radius * asteriodsSpeed[i].p[1])) / (radius+radius2);
 
-		speedKugel.p[0] = newX1Speed;
-		speedKugel2.p[0] = newX2Speed;
-		speedKugel.p[1] = newY1Speed;
-		speedKugel2.p[1] = newX2Speed;
+		asteriodsSpeed[i].p[0] = newX1Speed;
+		asteriodsSpeed[i+1].p[0] = newX2Speed;
+		asteriodsSpeed[i].p[1] = newY1Speed;
+		asteriodsSpeed[i+1].p[1] = newY2Speed;
 
 
+	}
+	void kollisionBande(int i){
+		if((asteriods[i].p[0]+radius)>=14){
+			asteriodsSpeed[i].p[0] *= -1;
+		}else if((asteriods[i].p[0]-radius)<=-14){
+			asteriodsSpeed[i].p[0] *= -1;
+		}else if((asteriods[i].p[1]-radius)<=-9){
+			asteriodsSpeed[i].p[1] *= -1;
+		}else if((asteriods[i].p[1]+radius)>=9){
+			asteriodsSpeed[i].p[1] *= -1;
+		}
 	}
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 		//Rotation
 		/*if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed; //Hinten drehen
 		if (key == GLFW_KEY_A) alpha_2 -= w1RSpeed; //Vorne drehen
 		if (key == GLFW_KEY_S) alpha_1 += w1RSpeed; //Links drehen
-		if (key == GLFW_KEY_D) alpha_2 += w1RSpeed; //Rechts drehen*/
+		if (key == GLFW_KEY_D) alpha_2 += w1RSpeed; //Rechts drehen
 
 		if (key == GLFW_KEY_A){
-			defender.p[0]+=-0.25;
+			kugel.p[0]+=-0.25;
 		}
 		if (key == GLFW_KEY_D){
-			defender.p[0]+=0.25;
+			kugel.p[0]+=0.25;
 
-		}
+		}*/
 	}
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
 
@@ -167,32 +179,29 @@ Vec3 speedKugel2 (-0.001, -0.001, 0);
 			glVertex3dv( seite4.p);
 			glEnd();
 	}
-
-	void asteroids(){
-		/*auslagern in eigene Klasse:
-		-benötigt: ungefährer Mittelpunkt und Radius
-		*/
-		glBegin(GL_TRIANGLE_FAN);
-	    glColor3f(1,1,0);
-	    glVertex3f(0,0,1);
-	    glColor3f(1,0,0);
-	    glVertex3f(0,.5,1);
-	    glVertex3f(1,0,1);
-	    glColor3f(0,0,1);
-	    glColor3f(0,0,1);
-	    glVertex3f(0,-.81,1);
-	    glVertex3f(0,-1,1);
-	    glColor3f(0,0,1);
-	    glVertex3f(-.8,-1,1);
-	    glColor3f(1,0,0);
-	    glVertex3f(0,-0.5,1);
-	    glColor3f(1,0,0);
-	    glVertex3f(1,-1,1);
-	    glColor3f(1,0,0);
-	    glVertex3f(-1,0,1);
-	    glColor3f(1,0,0);
-	    glVertex3f(0,1,1);
-		glEnd();
+	void insert(){
+		Vec3 defender(-5,-8,10);
+		asteriods.push_back(defender);
+		Vec3 speedKugel (-0.01, -0.01, 0);
+		Vec3 speedKugel2 (0.01, 0.01, 0);
+		asteriodsSpeed.push_back(speedKugel);
+		Vec3 defender2(5,-3,10);
+		asteriods.push_back(defender2);
+		asteriodsSpeed.push_back(speedKugel2);
+	}
+	void move(){
+		for(unsigned i =0; i<asteriods.size(); i++){
+			asteriods[i].p[0] += asteriodsSpeed[i].p[0];
+			asteriods[i].p[1] += asteriodsSpeed[i].p[1];
+			kollisionBande(i);
+			if(!(i+1<asteriods.size())){
+				Vec3 a = asteriods[i];
+				Vec3 b = asteriods[i+1];
+				if(collide(a, b, radius, radius2)){
+					newDirections(i);
+				}
+			}
+		}
 	}
 	void Preview() {
 		glMatrixMode(GL_MODELVIEW);
@@ -207,24 +216,18 @@ Vec3 speedKugel2 (-0.001, -0.001, 0);
 			SetMaterialColor(1, 1, 1, 1);
 			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
 			//Asteroit
-			asteroids();
 			glTranslated(0, 0, -10);
 			SetMaterialColor(3, .99, .1, .1);
-			DrawSphere(defender, radius);
+			Vec3 a = asteriods[0];
+			DrawSphere(a, radius);
 			SetMaterialColor(3, .99, .1, .1);
-			DrawSphere(defender2, radius2);
+			Vec3 b = asteriods[1];
+			DrawSphere(b, radius2);
+			move();
 			glPopMatrix();
 		glPopMatrix();
-		defender.p[0] += speedKugel.p[0];
-		defender2.p[0] += speedKugel2.p[0];
-		defender2.p[1] += speedKugel2.p[1];
-		if(collide(defender, defender2, radius, radius2)){
-			printf("kollidiert\n");
-			newDirections();
-		}else{
-			printf("Not\n");
-		}
 	}
+
 	int main() {
 		GLFWwindow* window = NULL;
 		printf("Here we go!\n");
@@ -237,6 +240,7 @@ Vec3 speedKugel2 (-0.001, -0.001, 0);
 		glfwTerminate();
 		return -1;
 	}
+	insert();
 	glfwMakeContextCurrent(window);
 		while(!glfwWindowShouldClose(window)) {
 			// switch on lighting (or you don't see anything)
