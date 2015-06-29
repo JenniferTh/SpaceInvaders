@@ -24,7 +24,7 @@ double length = 2;
 vector<Vec3> asteriods;
 vector<Vec3> asteriodsSpeed;
 double radius = .35;
-double radius2 = .5;
+double radius2 = .8;
 
 
 
@@ -123,33 +123,37 @@ double radius2 = .5;
 			return false;
 		}
 	}
-	void newDirections(int i){
+	void newDirections(int i, int j){
 		double newX1Speed;
 		double newX2Speed;
 		double newY1Speed;
 		double newY2Speed;
 
-		newX1Speed = (asteriodsSpeed[i].p[0]*(radius-radius2) + (2* radius2 * asteriodsSpeed[i+1].p[0])) / (radius+radius2);
-		newX2Speed = (asteriodsSpeed[i+1].p[0]*(radius2-radius) + (2* radius * asteriodsSpeed[i].p[0])) / (radius+radius2);
-		newY1Speed = (asteriodsSpeed[i].p[1]*(radius-radius2) + (2* radius2 * asteriodsSpeed[i+1].p[1])) / (radius+radius2);
-		newY2Speed = (asteriodsSpeed[i+1].p[1]*(radius2-radius) + (2* radius * asteriodsSpeed[i].p[1])) / (radius+radius2);
+		newX1Speed = (asteriodsSpeed[i].p[0]*(radius-radius2) + (2* radius2 * asteriodsSpeed[j].p[0])) / (radius+radius2);
+		newX2Speed = (asteriodsSpeed[j].p[0]*(radius2-radius) + (2* radius * asteriodsSpeed[i].p[0])) / (radius+radius2);
+		newY1Speed = (asteriodsSpeed[i].p[1]*(radius-radius2) + (2* radius2 * asteriodsSpeed[j].p[1])) / (radius+radius2);
+		newY2Speed = (asteriodsSpeed[j].p[1]*(radius2-radius) + (2* radius * asteriodsSpeed[i].p[1])) / (radius+radius2);
 
 		asteriodsSpeed[i].p[0] = newX1Speed;
-		asteriodsSpeed[i+1].p[0] = newX2Speed;
+		asteriodsSpeed[j].p[0] = newX2Speed;
 		asteriodsSpeed[i].p[1] = newY1Speed;
-		asteriodsSpeed[i+1].p[1] = newY2Speed;
+		asteriodsSpeed[j].p[1] = newY2Speed;
 
 
 	}
 	void kollisionBande(int i){
-		if((asteriods[i].p[0]+radius)>=14){
-			asteriodsSpeed[i].p[0] *= -1;
-		}else if((asteriods[i].p[0]-radius)<=-14){
-			asteriodsSpeed[i].p[0] *= -1;
-		}else if((asteriods[i].p[1]-radius)<=-9){
-			asteriodsSpeed[i].p[1] *= -1;
-		}else if((asteriods[i].p[1]+radius)>=9){
-			asteriodsSpeed[i].p[1] *= -1;
+		if((asteriods[i].p[0]+radius2)>=14+(2*radius2)){
+			asteriods[i].p[0] *= -1;
+			asteriods[i].p[1] *= -1;
+		}else if((asteriods[i].p[0]-radius2)<=-14-(2*radius2)){
+			asteriods[i].p[0] *= -1;
+			asteriods[i].p[1] *= -1;
+		}else if((asteriods[i].p[1]-radius2)<=-9-(2*radius2)){
+			asteriods[i].p[0] *= -1;
+			asteriods[i].p[1] *= -1;
+		}else if((asteriods[i].p[1]+radius2)>=9+(2*radius2)){
+			asteriods[i].p[0] *= -1;
+			asteriods[i].p[1] *= -1;
 		}
 	}
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -180,27 +184,45 @@ double radius2 = .5;
 			glEnd();
 	}
 	void insert(){
-		Vec3 defender(-5,-8,10);
+		Vec3 defender(-5,-5,10);
 		asteriods.push_back(defender);
-		Vec3 speedKugel (-0.01, -0.01, 0);
-		Vec3 speedKugel2 (0.01, 0.01, 0);
+		Vec3 speedKugel (-0.005, -0.005, 0);
+		Vec3 speedKugel2 (0.005, 0.005, 0);
 		asteriodsSpeed.push_back(speedKugel);
 		Vec3 defender2(5,-3,10);
 		asteriods.push_back(defender2);
 		asteriodsSpeed.push_back(speedKugel2);
+		asteriods.push_back(Vec3(8,-5,10));
+		asteriodsSpeed.push_back(Vec3(0.005,-0.005,0));
+		asteriods.push_back(Vec3(8,2,10));
+		asteriodsSpeed.push_back(Vec3(0.0035,-0.01,0));
 	}
 	void move(){
 		for(unsigned i =0; i<asteriods.size(); i++){
-			asteriods[i].p[0] += asteriodsSpeed[i].p[0];
-			asteriods[i].p[1] += asteriodsSpeed[i].p[1];
 			kollisionBande(i);
-			if(!(i+1<asteriods.size())){
-				Vec3 a = asteriods[i];
-				Vec3 b = asteriods[i+1];
-				if(collide(a, b, radius, radius2)){
-					newDirections(i);
+			for(unsigned j =0; j<asteriods.size(); j++){
+				if(j<=i){
+					j=i+1;
+				}
+				asteriods[i].p[0] += asteriodsSpeed[i].p[0];
+				asteriods[i].p[1] += asteriodsSpeed[i].p[1];
+				//if(!(i+1<asteriods.size())){
+				if(collide(asteriods[i], asteriods[j], radius, radius2)){
+					if(asteriods[i].p[1]>asteriods[j].p[1]){
+						newDirections(j,i);
+					}else{
+						newDirections(i,j);
+					}
+				//}
+				//newDirections(i,j);
 				}
 			}
+		}
+	}
+	void drawAsteriods(){
+		for(unsigned i = 0; i<asteriods.size();i++){
+			SetMaterialColor(3, .99, .1, .1);
+			DrawSphere(asteriods[i], radius2);
 		}
 	}
 	void Preview() {
@@ -215,14 +237,22 @@ double radius2 = .5;
 			//Spielfeld
 			SetMaterialColor(1, 1, 1, 1);
 			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
+
+			SetMaterialColor(0, 0, 0, 1);
+			drawSquare(Vec3(-14,-9,5), Vec3(14,-9,5), Vec3(14,-12,5), Vec3(-14,-12,5));
+
+			SetMaterialColor(0, 0, 0, 1);
+			drawSquare(Vec3(-14,-12,5), Vec3(-14,12,5), Vec3(-16,12,5), Vec3(-16,-12,5));
+
+			SetMaterialColor(0, 0, 0, 1);
+			drawSquare(Vec3(14,-12,5), Vec3(16,-12,5), Vec3(16,12,5), Vec3(14,12,5));
+
+			SetMaterialColor(0, 0, 0, 1);
+			drawSquare(Vec3(-14,9,5), Vec3(14,9,5), Vec3(14,12,5), Vec3(-14,12,5));
+
 			//Asteroit
 			glTranslated(0, 0, -10);
-			SetMaterialColor(3, .99, .1, .1);
-			Vec3 a = asteriods[0];
-			DrawSphere(a, radius);
-			SetMaterialColor(3, .99, .1, .1);
-			Vec3 b = asteriods[1];
-			DrawSphere(b, radius2);
+			drawAsteriods();
 			move();
 			glPopMatrix();
 		glPopMatrix();
