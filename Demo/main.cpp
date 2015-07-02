@@ -19,12 +19,13 @@ double w1RSpeed = 4;
 static double alpha_1 = 0;
 static double alpha_2 = 0;
 double length = 2;
+//int round = 0;
 
 //Asteriods
 vector<Vec3> asteriods;
 vector<Vec3> asteriodsSpeed;
-double r = 1;
-
+double r = .8;
+double speed = 0.3;
 
 
 	void DrawSphere(const Vec3& ctr, double r){
@@ -133,11 +134,24 @@ double r = 1;
 		newY1Speed = (asteriodsSpeed[i].p[1]*(r-r) + (2* r * asteriodsSpeed[j].p[1])) / (r+r);
 		newY2Speed = (asteriodsSpeed[j].p[1]*(r-r) + (2* r * asteriodsSpeed[i].p[1])) / (r+r);
 
+		/*
+		newX1Speed = asteriodsSpeed[i].p[0]-2*r/(r-r) * ((asteriodsSpeed[i].p[0]-asteriodsSpeed[j].p[0])*(asteriods[i].p[0]-asteriods[j].p[0]) / pow(fabs(asteriods[i].p[0]-asteriods[j].p[0]), 2))* (asteriods[i].p[0]-asteriods[j].p[0]);
+		newX2Speed = asteriodsSpeed[j].p[0]-2*r/(r-r) * ((asteriodsSpeed[j].p[0]-asteriodsSpeed[i].p[0])*(asteriods[j].p[0]-asteriods[i].p[0]) / pow(fabs(asteriods[j].p[0]-asteriods[i].p[0]), 2))* (asteriods[j].p[0]-asteriods[i].p[0]);
+		newY1Speed = asteriodsSpeed[i].p[1]-2*r/(r-r) * ((asteriodsSpeed[i].p[1]-asteriodsSpeed[j].p[1])*(asteriods[i].p[1]-asteriods[j].p[1]) / pow(fabs(asteriods[i].p[1]-asteriods[j].p[1]), 2))* (asteriods[i].p[1]-asteriods[j].p[1]);
+		newY2Speed = asteriodsSpeed[j].p[1]-2*r/(r-r) * ((asteriodsSpeed[j].p[1]-asteriodsSpeed[i].p[1])*(asteriods[j].p[0]-asteriods[i].p[1]) / pow(fabs(asteriods[j].p[1]-asteriods[i].p[1]), 2))* (asteriods[j].p[1]-asteriods[i].p[1]);
+		 */
 		asteriodsSpeed[i].p[0] = newX1Speed;
 		asteriodsSpeed[j].p[0] = newX2Speed;
 		asteriodsSpeed[i].p[1] = newY1Speed;
 		asteriodsSpeed[j].p[1] = newY2Speed;
-
+		asteriods[i].p[0] += asteriodsSpeed[i].p[0]*speed;
+		asteriods[i].p[1] += asteriodsSpeed[i].p[1]*speed;
+		asteriods[j].p[0] += asteriodsSpeed[j].p[0]*speed;
+		asteriods[j].p[1] += asteriodsSpeed[j].p[1]*speed;
+	}
+	double randomDoubleBetween(double XMin, double XMax){
+		double X = XMin + rand() * (XMax - XMin) / RAND_MAX;
+		return X;
 	}
 	void kollisionBande(int i){
 		if((asteriods[i].p[0]+r)>=14+(2*r)){
@@ -182,6 +196,15 @@ double r = 1;
 			glEnd();
 	}
 	void insert(){
+		/*
+		 for(unsigned i = 0;i<10+(3*round);i++){
+		 	 Vec3 m(randomDoubleBetween(-14, 14),randomDoubleBetween(-9, 9), 0);
+		 	 Asteriod n1(m);
+		 	 asteriods.push_back(n1);
+		 	 //Vector asteriods von Vec3 zu Asteriods!!!
+		 }
+		 */
+
 		Vec3 defender(-5,-5,10);
 		asteriods.push_back(defender);
 		Vec3 speedKugel (-0.005, -0.005, 0);
@@ -205,8 +228,8 @@ double r = 1;
 						newDirections(j,i);
 					}
 				}
-				asteriods[i].p[0] += asteriodsSpeed[i].p[0]*.09;
-				asteriods[i].p[1] += asteriodsSpeed[i].p[1]*.09;
+				asteriods[i].p[0] += asteriodsSpeed[i].p[0]*speed;
+				asteriods[i].p[1] += asteriodsSpeed[i].p[1]*speed;
 			}
 			kollisionBande(i);
 		}
@@ -221,6 +244,10 @@ double r = 1;
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		glPushMatrix();
+			if(asteriods.empty()){
+				insert();
+				//round +=1;
+			}
 			glTranslated(0,0,-10);
 			//Rotation
 			glRotated(alpha_1, 1, 0, 0);
@@ -246,7 +273,6 @@ double r = 1;
 			glTranslated(0, 0, -10);
 			drawAsteriods();
 			move();
-			glPopMatrix();
 		glPopMatrix();
 	}
 
