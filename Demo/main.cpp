@@ -19,13 +19,13 @@ double w1RSpeed = 4;
 static double alpha_1 = 0;
 static double alpha_2 = 0;
 double length = 2;
-//int round = 0;
+int ro = 0;
 
 //Asteriods
-vector<Vec3> asteriods;
-vector<Vec3> asteriodsSpeed;
-double r = .8;
-double speed = 0.3;
+vector<Vec3> asteroids;
+vector<Vec3> asteroidsSpeed;
+vector<double> radius;
+double speed = 1;
 
 
 	void DrawSphere(const Vec3& ctr, double r){
@@ -116,61 +116,48 @@ double speed = 0.3;
 		glMaterialfv(mat, GL_SPECULAR, spe);
 		glMaterialf( mat, GL_SHININESS, 20);
 	}
-	bool collide(Vec3 m1, Vec3 m2, double r1, double r2){
-		if(pow((m2.p[0]-m1.p[0]),2) + pow((m1.p[1]-m2.p[1]), 2) <= pow((r1+r2),2)){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	void newDirections(int i, int j){
-		double newX1Speed;
-		double newX2Speed;
-		double newY1Speed;
-		double newY2Speed;
+	void elasticCollision(int i, int j){
+		double mass1 = radius[i];
+		double mass2 = radius[j];
 
-		newX1Speed = (asteriodsSpeed[i].p[0]*(r-r) + (2* r * asteriodsSpeed[j].p[0])) / (r+r);
-		newX2Speed = (asteriodsSpeed[j].p[0]*(r-r) + (2* r * asteriodsSpeed[i].p[0])) / (r+r);
-		newY1Speed = (asteriodsSpeed[i].p[1]*(r-r) + (2* r * asteriodsSpeed[j].p[1])) / (r+r);
-		newY2Speed = (asteriodsSpeed[j].p[1]*(r-r) + (2* r * asteriodsSpeed[i].p[1])) / (r+r);
+		double newSpeedX2 = (2*mass1*asteroidsSpeed[i].p[0]+asteroidsSpeed[j].p[0]*(mass2-mass1)) / (mass1 + mass2);
+		double newSpeedX1 = (2*mass2*asteroidsSpeed[j].p[0]+asteroidsSpeed[i].p[0]*(mass1-mass2)) / (mass1 + mass2);
+		double newSpeedY2 = (2*mass1*asteroidsSpeed[i].p[1]+asteroidsSpeed[j].p[1]*(mass2-mass1)) / (mass1 + mass2);
+		double newSpeedY1 = (2*mass2*asteroidsSpeed[j].p[1]+asteroidsSpeed[i].p[1]*(mass1-mass2)) / (mass1 + mass2);
 
-		/*
-		newX1Speed = asteriodsSpeed[i].p[0]-2*r/(r-r) * ((asteriodsSpeed[i].p[0]-asteriodsSpeed[j].p[0])*(asteriods[i].p[0]-asteriods[j].p[0]) / pow(fabs(asteriods[i].p[0]-asteriods[j].p[0]), 2))* (asteriods[i].p[0]-asteriods[j].p[0]);
-		newX2Speed = asteriodsSpeed[j].p[0]-2*r/(r-r) * ((asteriodsSpeed[j].p[0]-asteriodsSpeed[i].p[0])*(asteriods[j].p[0]-asteriods[i].p[0]) / pow(fabs(asteriods[j].p[0]-asteriods[i].p[0]), 2))* (asteriods[j].p[0]-asteriods[i].p[0]);
-		newY1Speed = asteriodsSpeed[i].p[1]-2*r/(r-r) * ((asteriodsSpeed[i].p[1]-asteriodsSpeed[j].p[1])*(asteriods[i].p[1]-asteriods[j].p[1]) / pow(fabs(asteriods[i].p[1]-asteriods[j].p[1]), 2))* (asteriods[i].p[1]-asteriods[j].p[1]);
-		newY2Speed = asteriodsSpeed[j].p[1]-2*r/(r-r) * ((asteriodsSpeed[j].p[1]-asteriodsSpeed[i].p[1])*(asteriods[j].p[0]-asteriods[i].p[1]) / pow(fabs(asteriods[j].p[1]-asteriods[i].p[1]), 2))* (asteriods[j].p[1]-asteriods[i].p[1]);
-		 */
-		asteriodsSpeed[i].p[0] = newX1Speed;
-		asteriodsSpeed[j].p[0] = newX2Speed;
-		asteriodsSpeed[i].p[1] = newY1Speed;
-		asteriodsSpeed[j].p[1] = newY2Speed;
-		asteriods[i].p[0] += asteriodsSpeed[i].p[0]*speed;
-		asteriods[i].p[1] += asteriodsSpeed[i].p[1]*speed;
-		asteriods[j].p[0] += asteriodsSpeed[j].p[0]*speed;
-		asteriods[j].p[1] += asteriodsSpeed[j].p[1]*speed;
+		asteroidsSpeed[i].p[0] = newSpeedX1;
+		asteroidsSpeed[j].p[0] = newSpeedX2;
+		asteroidsSpeed[i].p[1] = newSpeedY1;
+		asteroidsSpeed[j].p[1] = newSpeedY2;
+
+		asteroids[i].p[0] += newSpeedX1;
+		asteroids[j].p[0] += newSpeedX2;
+		asteroids[i].p[1] += newSpeedY1;
+		asteroids[j].p[1] += newSpeedY2;
 	}
 	double randomDoubleBetween(double XMin, double XMax){
 		double X = XMin + rand() * (XMax - XMin) / RAND_MAX;
 		return X;
 	}
-	void kollisionBande(int i){
-		if((asteriods[i].p[0]+r)>=14+(2*r)){
-			asteriods[i].p[0] *= -1;
-			asteriods[i].p[1] *= -1;
-		}else if((asteriods[i].p[0]-r)<=-14-(2*r)){
-			asteriods[i].p[0] *= -1;
-			asteriods[i].p[1] *= -1;
-		}else if((asteriods[i].p[1]-r)<=-9-(2*r)){
-			asteriods[i].p[0] *= -1;
-			asteriods[i].p[1] *= -1;
-		}else if((asteriods[i].p[1]+r)>=9+(2*r)){
-			asteriods[i].p[0] *= -1;
-			asteriods[i].p[1] *= -1;
+	void collideRingFence(int i){
+		if((asteroids[i].p[0]+radius[i])>=14+(2*radius[i])){
+			asteroids[i].p[0] *= -1;
+			asteroids[i].p[1] *= -1;
+		}else if((asteroids[i].p[0]-radius[i])<=-14-(2*radius[i])){
+			asteroids[i].p[0] *= -1;
+			asteroids[i].p[1] *= -1;
+		}else if((asteroids[i].p[1]-radius[i])<=-9-(2*radius[i])){
+			asteroids[i].p[0] *= -1;
+			asteroids[i].p[1] *= -1;
+		}else if((asteroids[i].p[1]+radius[i])>=9+(2*radius[i])){
+			asteroids[i].p[0] *= -1;
+			asteroids[i].p[1] *= -1;
 		}
 	}
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
 		//Rotation
-		/*if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed; //Hinten drehen
+		/*
+		if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed; //Hinten drehen
 		if (key == GLFW_KEY_A) alpha_2 -= w1RSpeed; //Vorne drehen
 		if (key == GLFW_KEY_S) alpha_1 += w1RSpeed; //Links drehen
 		if (key == GLFW_KEY_D) alpha_2 += w1RSpeed; //Rechts drehen
@@ -182,6 +169,26 @@ double speed = 0.3;
 			kugel.p[0]+=0.25;
 
 		}*/
+		if (key == GLFW_KEY_L) speed = 0;
+		if (key == GLFW_KEY_K) speed = 1;
+		if (key == GLFW_KEY_P) speed += 0.01;
+		if (key == GLFW_KEY_O) speed -= 0.01;
+		if (key == GLFW_KEY_M) {
+			asteroids.clear();
+			radius.clear();
+			asteroidsSpeed.clear();
+			for(int i = 0; i<10;i++){
+				double x = randomDoubleBetween(-14, 14);
+				double y = randomDoubleBetween(-9, 9);
+				double r = randomDoubleBetween(0.8,1.2);
+				Vec3 m(x,y,10);
+				radius.push_back(r);
+				asteroids.push_back(m);
+				asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.005, 0.005),randomDoubleBetween(-0.005, 0.005),0));
+				//Vector asteriods von Vec3 zu Asteriods!!!
+			}
+		}
+
 	}
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
 
@@ -195,56 +202,59 @@ double speed = 0.3;
 			glVertex3dv( seite4.p);
 			glEnd();
 	}
-	void insert(){
-		/*
-		 for(unsigned i = 0;i<10+(3*round);i++){
-		 	 Vec3 m(randomDoubleBetween(-14, 14),randomDoubleBetween(-9, 9), 0);
-		 	 Asteriod n1(m);
-		 	 asteriods.push_back(n1);
-		 	 //Vector asteriods von Vec3 zu Asteriods!!!
-		 }
-		 */
-
-		Vec3 defender(-5,-5,10);
-		asteriods.push_back(defender);
-		Vec3 speedKugel (-0.005, -0.005, 0);
-		Vec3 speedKugel2 (0.005, 0.005, 0);
-		asteriodsSpeed.push_back(speedKugel);
-		Vec3 defender2(5,-3,10);
-		asteriods.push_back(defender2);
-		asteriodsSpeed.push_back(speedKugel2);
-		asteriods.push_back(Vec3(8,-5,10));
-		asteriodsSpeed.push_back(Vec3(0.005,-0.005,0));
-		asteriods.push_back(Vec3(5,2,10));
-		asteriodsSpeed.push_back(Vec3(0.0035,-0.01,0));
+	void collide(int i, int j){
+		double distance = pow(((asteroids[i].p[0]-asteroids[j].p[0])*(asteroids[i].p[0]-asteroids[j].p[0]))
+				+((asteroids[i].p[1]-asteroids[j].p[1])*(asteroids[i].p[1]-asteroids[j].p[1])),2);
+		if (distance < 0) { distance = distance * -1; }
+		if(asteroids[i].p[0] + radius[i] + radius[j] > asteroids[j].p[0]
+		&& asteroids[i].p[0] < radius[i] + radius[j] + asteroids[j].p[0]
+		&& asteroids[i].p[1] + radius[i] + radius[j] > asteroids[j].p[1]
+		&& asteroids[i].p[1] < radius[i] + radius[j] + asteroids[j].p[1]
+		&& distance < radius[i] + radius[j]){
+			elasticCollision(i, j);
+		}
+	}
+	void newLocation(int i){
+		asteroids[i].p[0] += asteroidsSpeed[i].p[0]*speed;
+		asteroids[i].p[1] += asteroidsSpeed[i].p[1]*speed;
 	}
 	void move(){
-		for(unsigned i =0; i<asteriods.size(); i++){
-
-			for(unsigned j =0; j<asteriods.size(); j++){
-
-				if(collide(asteriods[i], asteriods[j], r, r)){
-					if(asteriods[i].p[1]>asteriods[j].p[1]){
-						newDirections(j,i);
-					}
+		for(unsigned i = 0; i<asteroids.size();i++){
+			newLocation(i);
+			for(unsigned j = 0; j<asteroids.size();j++){
+				if(i!=j){
+					collide(i,j);
 				}
-				asteriods[i].p[0] += asteriodsSpeed[i].p[0]*speed;
-				asteriods[i].p[1] += asteriodsSpeed[i].p[1]*speed;
 			}
-			kollisionBande(i);
+			collideRingFence(i);
 		}
 	}
 	void drawAsteriods(){
-		for(unsigned i = 0; i<asteriods.size();i++){
+		for(unsigned i = 0; i<asteroids.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
-			DrawSphere(asteriods[i], r);
+			DrawSphere(asteroids[i], radius[i]);
+		}
+	}
+	void insert(){
+		asteroids.empty();
+		radius.empty();
+		asteroidsSpeed.empty();
+		for(int i = 0; i<10;i++){
+			double x = randomDoubleBetween(-14, 14);
+			double y = randomDoubleBetween(-9, 9);
+			double r = randomDoubleBetween(0.8,1.2);
+		 	Vec3 m(x,y,10);
+		 	radius.push_back(r);
+		 	asteroids.push_back(m);
+		 	asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.005, 0.005),randomDoubleBetween(-0.005, 0.005),0));
+		 	//Vector asteriods von Vec3 zu Asteriods!!!
 		}
 	}
 	void Preview() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		glPushMatrix();
-			if(asteriods.empty()){
+			if(asteroids.size()<1){
 				insert();
 				//round +=1;
 			}
@@ -269,13 +279,12 @@ double speed = 0.3;
 			SetMaterialColor(0, 0, 0, .01);
 			drawSquare(Vec3(-14,9,5), Vec3(14,9,5), Vec3(14,12,5), Vec3(-14,12,5));
 
-			//Asteroit
+			//Asteroid
 			glTranslated(0, 0, -10);
 			drawAsteriods();
 			move();
 		glPopMatrix();
 	}
-
 	int main() {
 		GLFWwindow* window = NULL;
 		printf("Here we go!\n");
@@ -288,7 +297,6 @@ double speed = 0.3;
 		glfwTerminate();
 		return -1;
 	}
-	insert();
 	glfwMakeContextCurrent(window);
 		while(!glfwWindowShouldClose(window)) {
 			// switch on lighting (or you don't see anything)
