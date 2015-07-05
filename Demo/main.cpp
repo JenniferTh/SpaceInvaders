@@ -9,6 +9,7 @@
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include "Ufo.h"
 
 using namespace std;
 static double window_width_ = 1024;
