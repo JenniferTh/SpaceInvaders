@@ -371,6 +371,9 @@ double shuttleR = 1;
 	void Preview() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		//Ufo
+					Ufo Ufo1;
+					Ufo1.DrawUfo();
 		glPushMatrix();
 			if(asteroids.size()<1){
 				insert();
@@ -406,9 +409,7 @@ double shuttleR = 1;
 			draw();
 			move();
 
-			//Ufo
-			Ufo Ufo1;
-			Ufo1.DrawUfo();
+
 		glPopMatrix();
 	}
 	int main() {

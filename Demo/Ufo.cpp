@@ -36,9 +36,9 @@ void Ufo::MoveUfo(){
 void Ufo::DrawUfo()
 {
 
-	double PunktA[] = {-0.6f, -0.4f, 0.f};
-	double PunktB[] = {PunktA[0]+0.6f, PunktA[1] +0.2f, PunktA[0]-0.5f};
-	double PunktC[] = {PunktA[0]+0.6f, PunktA[1] +1.2f, PunktA[2] -0.5f};
+	double PunktA[] = {-0.6f, -0.4f, 10.f};
+	double PunktB[] = {PunktA[0]+0.6f, PunktA[1] +0.2f,  10.f};
+	double PunktC[] = {PunktA[0]+0.6f, PunktA[1] +1.2f,  10.f};
 	double PunktD[] = {PunktA[1]+1.0f, PunktA[1], PunktA[2]};
 
 	glPushMatrix();
