@@ -31,6 +31,7 @@ Vec3 shuttle(0,0,10);
 Vec3 shuttleSpeed(0.05,0.05,0);
 vector<Vec3> projectiles;
 vector<Vec3> projectilesDirection;
+
 double shuttleR = 1;
 
 	void DrawSphere(const Vec3& ctr, double r){
@@ -350,6 +351,8 @@ double shuttleR = 1;
 			glPushMatrix();
 			SetMaterialColor(0, 0, .1, .1);
 			DrawSphere(shuttle, shuttleR);
+
+
 			//Spielfeld
 			SetMaterialColor(1, 1, 1, 1);
 			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
@@ -370,6 +373,10 @@ double shuttleR = 1;
 			glTranslated(0, 0, -10);
 			draw();
 			move();
+
+			//Ufo
+			Ufo Ufo1;
+			Ufo1.DrawUfo();
 		glPopMatrix();
 	}
 	int main() {
