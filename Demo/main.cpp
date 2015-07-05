@@ -18,7 +18,6 @@ static double ypos = -10; //Maus Position//Rotation
 double w1RSpeed = 4;
 static double alpha_1 = 0;
 static double alpha_2 = 0;
-double length = 2;
 int ro = 0;
 
 //Asteriods
@@ -27,6 +26,12 @@ vector<Vec3> asteroidsSpeed;
 vector<double> radius;
 double speed = 1;
 
+//Shuttle
+Vec3 shuttle(0,0,10);
+Vec3 shuttleSpeed(0.05,0.05,0);
+vector<Vec3> projectiles;
+vector<Vec3> projectilesDirection;
+double shuttleR = 1;
 
 	void DrawSphere(const Vec3& ctr, double r){
 	int i, j,
@@ -169,6 +174,37 @@ double speed = 1;
 			kugel.p[0]+=0.25;
 
 		}*/
+
+		if (key == GLFW_KEY_SPACE){
+			SetMaterialColor(0, 0, .1, .1);
+			Vec3 projectil;
+			projectil.p[0] = shuttle.p[0];
+			projectil.p[1] = shuttle.p[1];
+			projectil.p[2] = 10;
+			DrawSphere(projectil, .1);
+			projectiles.push_back(projectil);
+			projectilesDirection.push_back(shuttleSpeed);
+		}
+		if (key == GLFW_KEY_UP) {
+			for(unsigned i = 0;i<5;i++){
+				shuttle.p[0]+=shuttleSpeed.p[0];
+				shuttle.p[1]+=shuttleSpeed.p[1];
+			}
+		}
+		if (key == GLFW_KEY_DOWN) {
+			for(unsigned i = 0;i<5;i++){
+				shuttle.p[0]-=shuttleSpeed.p[0];
+				shuttle.p[1]-=shuttleSpeed.p[1];
+			}
+		}
+		if (key == GLFW_KEY_LEFT){
+			int angle = -20;
+			shuttleSpeed.p[0] += 0.1;
+		}
+		if (key == GLFW_KEY_RIGHT){
+			int angle = -20;
+			shuttleSpeed.p[0] -= 0.1;
+		}
 		if (key == GLFW_KEY_L) speed = 0;
 		if (key == GLFW_KEY_K) speed = 1;
 		if (key == GLFW_KEY_P) speed += 0.01;
@@ -202,7 +238,7 @@ double speed = 1;
 			glVertex3dv( seite4.p);
 			glEnd();
 	}
-	void collide(int i, int j){
+	void collideBalls(int i, int j){
 		double distance = pow(((asteroids[i].p[0]-asteroids[j].p[0])*(asteroids[i].p[0]-asteroids[j].p[0]))
 				+((asteroids[i].p[1]-asteroids[j].p[1])*(asteroids[i].p[1]-asteroids[j].p[1])),2);
 		if (distance < 0) { distance = distance * -1; }
@@ -214,25 +250,64 @@ double speed = 1;
 			elasticCollision(i, j);
 		}
 	}
+	bool collideProjectile(int i, int j){
+		double distance = pow(((asteroids[i].p[0]-projectiles[j].p[0])*(asteroids[i].p[0]-projectiles[j].p[0]))
+						+((asteroids[i].p[1]-projectiles[j].p[1])*(asteroids[i].p[1]-projectiles[j].p[1])),2);
+		if (distance < 0) { distance = distance * -1; }
+		if(asteroids[i].p[0] + radius[i] + .1 > projectiles[j].p[0]
+		&& asteroids[i].p[0] < radius[i] + .1 + projectiles[j].p[0]
+		&& asteroids[i].p[1] + radius[i] + .1 > projectiles[j].p[1]
+		&& asteroids[i].p[1] < radius[i] + .1 + projectiles[j].p[1]
+		&& distance < radius[i] + radius[j]){
+			projectiles.erase(projectiles.begin()+j-1);
+			projectilesDirection.erase(projectilesDirection.begin()+j-1);
+			asteroids.erase(asteroids.begin()+i-1);
+			asteroidsSpeed.erase(asteroidsSpeed.begin()+i-1);
+			radius.erase(radius.begin()+i-1);
+			return true;
+		}
+		return false;
+	}
 	void newLocation(int i){
 		asteroids[i].p[0] += asteroidsSpeed[i].p[0]*speed;
 		asteroids[i].p[1] += asteroidsSpeed[i].p[1]*speed;
 	}
+	void rotateShuttle(int angle){
+		shuttleSpeed.p[0] = cos(angle)*shuttleSpeed.p[0]-sin(angle)*shuttleSpeed.p[0];
+		shuttleSpeed.p[1] = sin(angle)*shuttleSpeed.p[1]-cos(angle)*shuttleSpeed.p[1];
+	}
 	void move(){
 		for(unsigned i = 0; i<asteroids.size();i++){
 			newLocation(i);
-			for(unsigned j = 0; j<asteroids.size();j++){
-				if(i!=j){
-					collide(i,j);
+			for(unsigned t = 0; t<projectiles.size(); t++){
+				if(collideProjectile(i, t)){
+					break;
+				}
+				for(unsigned j = 0; j<asteroids.size();j++){
+					if(i!=j){
+						collideBalls(i,j);
+					}
 				}
 			}
 			collideRingFence(i);
 		}
+		for(unsigned i = 0; i<projectiles.size();i++){
+			projectiles[i].p[0] +=projectilesDirection[i].p[0];
+			projectiles[i].p[1] +=projectilesDirection[i].p[1];
+			if(projectiles[i].p[0]<-14-.1||projectiles[i].p[0]>14+.1||projectiles[i].p[1]<-9-.1||projectiles[i].p[1]>9+.1){
+				projectiles.erase(projectiles.begin()+i-1);
+				projectilesDirection.erase(projectilesDirection.begin()+i-1);
+			}
+		}
 	}
-	void drawAsteriods(){
+	void draw(){
 		for(unsigned i = 0; i<asteroids.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(asteroids[i], radius[i]);
+		}
+		for(unsigned i = 0; i<projectiles.size();i++){
+			SetMaterialColor(3, .99, .1, .1);
+			DrawSphere(projectiles[i], .1);
 		}
 	}
 	void insert(){
@@ -256,13 +331,15 @@ double speed = 1;
 		glPushMatrix();
 			if(asteroids.size()<1){
 				insert();
-				//round +=1;
+				ro +=1;
 			}
 			glTranslated(0,0,-10);
 			//Rotation
 			glRotated(alpha_1, 1, 0, 0);
 			glRotated(alpha_2, 0, 1, 0);
 			glPushMatrix();
+			SetMaterialColor(0, 0, .1, .1);
+			DrawSphere(shuttle, shuttleR);
 			//Spielfeld
 			SetMaterialColor(1, 1, 1, 1);
 			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
@@ -281,7 +358,7 @@ double speed = 1;
 
 			//Asteroid
 			glTranslated(0, 0, -10);
-			drawAsteriods();
+			draw();
 			move();
 		glPopMatrix();
 	}
