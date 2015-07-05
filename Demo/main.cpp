@@ -175,7 +175,7 @@ double shuttleR = 1;
 
 		}*/
 
-		if (key == GLFW_KEY_SPACE){
+		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE){
 			SetMaterialColor(0, 0, .1, .1);
 			Vec3 projectil;
 			projectil.p[0] = shuttle.p[0];
@@ -183,7 +183,10 @@ double shuttleR = 1;
 			projectil.p[2] = 10;
 			DrawSphere(projectil, .1);
 			projectiles.push_back(projectil);
-			projectilesDirection.push_back(shuttleSpeed);
+			projectil.p[0] = shuttleSpeed.p[0]*.1;
+			projectil.p[1] = shuttleSpeed.p[1]*.1;
+			projectil.p[2] = 0;
+			projectilesDirection.push_back(projectil);
 		}
 		if (key == GLFW_KEY_UP) {
 			for(unsigned i = 0;i<5;i++){
@@ -198,12 +201,10 @@ double shuttleR = 1;
 			}
 		}
 		if (key == GLFW_KEY_LEFT){
-			int angle = -20;
-			shuttleSpeed.p[0] += 0.1;
+
 		}
 		if (key == GLFW_KEY_RIGHT){
-			int angle = -20;
-			shuttleSpeed.p[0] -= 0.1;
+
 		}
 		if (key == GLFW_KEY_L) speed = 0;
 		if (key == GLFW_KEY_K) speed = 1;
@@ -259,11 +260,11 @@ double shuttleR = 1;
 		&& asteroids[i].p[1] + radius[i] + .1 > projectiles[j].p[1]
 		&& asteroids[i].p[1] < radius[i] + .1 + projectiles[j].p[1]
 		&& distance < radius[i] + radius[j]){
-			projectiles.erase(projectiles.begin()+j-1);
-			projectilesDirection.erase(projectilesDirection.begin()+j-1);
-			asteroids.erase(asteroids.begin()+i-1);
-			asteroidsSpeed.erase(asteroidsSpeed.begin()+i-1);
-			radius.erase(radius.begin()+i-1);
+			projectiles.erase(projectiles.begin()+j);
+			projectilesDirection.erase(projectilesDirection.begin()+j);
+			asteroids.erase(asteroids.begin()+i);
+			asteroidsSpeed.erase(asteroidsSpeed.begin()+i);
+			radius.erase(radius.begin()+i);
 			return true;
 		}
 		return false;
@@ -281,6 +282,7 @@ double shuttleR = 1;
 			newLocation(i);
 			for(unsigned t = 0; t<projectiles.size(); t++){
 				if(collideProjectile(i, t)){
+					i--;
 					break;
 				}
 				for(unsigned j = 0; j<asteroids.size();j++){
@@ -304,6 +306,12 @@ double shuttleR = 1;
 		for(unsigned i = 0; i<asteroids.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(asteroids[i], radius[i]);
+		}
+		if(projectiles.size()>10){
+			while(projectiles.size()>10){
+				projectiles.erase(projectiles.begin());
+				projectilesDirection.erase(projectilesDirection.begin());
+			}
 		}
 		for(unsigned i = 0; i<projectiles.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
