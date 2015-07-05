@@ -176,7 +176,7 @@ double shuttleR = 1;
 		}*/
 
 		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE){
-			if(projectiles.size()<=10){
+			//if(projectiles.size()<=10){
 				SetMaterialColor(0, 0, .1, .1);
 				Vec3 projectil;
 				projectil.p[0] = shuttle.p[0];
@@ -188,7 +188,7 @@ double shuttleR = 1;
 				projectil.p[1] = shuttleSpeed.p[1]*.1;
 				projectil.p[2] = 0;
 				projectilesDirection.push_back(projectil);
-			}
+			//}
 		}
 		if (key == GLFW_KEY_UP) {
 			for(unsigned i = 0;i<5;i++){
@@ -264,6 +264,32 @@ double shuttleR = 1;
 		&& distance < radius[i] + radius[j]){
 			projectiles.erase(projectiles.begin()+j);
 			projectilesDirection.erase(projectilesDirection.begin()+j);
+			if(asteroids[i].p[2]==10){
+				for(unsigned k = 0;k<4;k++){
+					double x;
+					double y;
+					if(k==0){
+						x = asteroids[i].p[0]+0.8;
+						y = asteroids[i].p[1];
+						asteroidsSpeed.push_back(Vec3(randomDoubleBetween(0.001, 0.005),randomDoubleBetween(-0.001, 0.001),0));
+					}else if(k==1){
+						x = asteroids[i].p[0]-0.8;
+						y = asteroids[i].p[1];
+						asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.005, -0.004),randomDoubleBetween(-0.001, 0.001),0));
+					}else if(k==2){
+						x = asteroids[i].p[0];
+						y = asteroids[i].p[1]+0.8;
+						asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.001, 0.001),randomDoubleBetween(0.001, 0.005),0));
+					}else if(k==3){
+						x = asteroids[i].p[0];
+						y = asteroids[i].p[1]-0.8;
+						asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.001, 0.001),randomDoubleBetween(-0.005, -0.004),0));
+					}
+					Vec3 m(x,y,10.001);
+					radius.push_back(.6);
+					asteroids.push_back(m);
+				}
+			}
 			asteroids.erase(asteroids.begin()+i);
 			asteroidsSpeed.erase(asteroidsSpeed.begin()+i);
 			radius.erase(radius.begin()+i);
@@ -282,15 +308,20 @@ double shuttleR = 1;
 	void move(){
 		for(unsigned i = 0; i<asteroids.size();i++){
 			newLocation(i);
+			bool deleted;
 			for(unsigned t = 0; t<projectiles.size(); t++){
 				if(collideProjectile(i, t)){
-					i--;
+					deleted = true;
 					break;
 				}
-				for(unsigned j = 0; j<asteroids.size();j++){
-					if(i!=j){
-						collideBalls(i,j);
-					}
+			}
+			for(unsigned j = 0; j<asteroids.size();j++){
+				if(deleted==true){
+					//i--;
+					break;
+				}
+				if(i!=j){
+					collideBalls(i,j);
 				}
 			}
 			collideRingFence(i);
@@ -306,15 +337,15 @@ double shuttleR = 1;
 	}
 	void draw(){
 		for(unsigned i = 0; i<asteroids.size();i++){
-			SetMaterialColor(3, .99, .1, .1);
+			SetMaterialColor(3, 1, 1, 1);
 			DrawSphere(asteroids[i], radius[i]);
 		}
-		/*if(projectiles.size()>10){
+		if(projectiles.size()>10){
 			while(projectiles.size()>10){
 				projectiles.erase(projectiles.begin());
 				projectilesDirection.erase(projectilesDirection.begin());
 			}
-		}*/
+		}
 		for(unsigned i = 0; i<projectiles.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(projectiles[i], .1);
@@ -324,7 +355,7 @@ double shuttleR = 1;
 		asteroids.empty();
 		radius.empty();
 		asteroidsSpeed.empty();
-		for(int i = 0; i<10;i++){
+		for(int i = 0; i<10+ro*2;i++){
 			double x = randomDoubleBetween(-14, 14);
 			double y = randomDoubleBetween(-9, 9);
 			double r = randomDoubleBetween(0.8,1.2);
@@ -351,19 +382,19 @@ double shuttleR = 1;
 			SetMaterialColor(0, 0, .1, .1);
 			DrawSphere(shuttle, shuttleR);
 			//Spielfeld
-			SetMaterialColor(1, 1, 1, 1);
+			SetMaterialColor(0, 0, 0, 0.15);
 			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
 
-			SetMaterialColor(0, 0, 0, .01);
+			SetMaterialColor(0, 0, 0, .1);
 			drawSquare(Vec3(-14,-9,5), Vec3(14,-9,5), Vec3(14,-12,5), Vec3(-14,-12,5));
 
-			SetMaterialColor(0, 0, 0, .01);
+			SetMaterialColor(0, 0, 0, .15);
 			drawSquare(Vec3(-14,-12,5), Vec3(-14,12,5), Vec3(-16,12,5), Vec3(-16,-12,5));
 
-			SetMaterialColor(0, 0, 0, .01);
+			SetMaterialColor(0, 0, 0, .15);
 			drawSquare(Vec3(14,-12,5), Vec3(16,-12,5), Vec3(16,12,5), Vec3(14,12,5));
 
-			SetMaterialColor(0, 0, 0, .01);
+			SetMaterialColor(0, 0, 0, .15);
 			drawSquare(Vec3(-14,9,5), Vec3(14,9,5), Vec3(14,12,5), Vec3(-14,12,5));
 
 			//Asteroid
