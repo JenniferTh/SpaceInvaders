@@ -176,17 +176,19 @@ double shuttleR = 1;
 		}*/
 
 		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE){
-			SetMaterialColor(0, 0, .1, .1);
-			Vec3 projectil;
-			projectil.p[0] = shuttle.p[0];
-			projectil.p[1] = shuttle.p[1];
-			projectil.p[2] = 10;
-			DrawSphere(projectil, .1);
-			projectiles.push_back(projectil);
-			projectil.p[0] = shuttleSpeed.p[0]*.1;
-			projectil.p[1] = shuttleSpeed.p[1]*.1;
-			projectil.p[2] = 0;
-			projectilesDirection.push_back(projectil);
+			if(projectiles.size()<=10){
+				SetMaterialColor(0, 0, .1, .1);
+				Vec3 projectil;
+				projectil.p[0] = shuttle.p[0];
+				projectil.p[1] = shuttle.p[1];
+				projectil.p[2] = 10;
+				DrawSphere(projectil, .1);
+				projectiles.push_back(projectil);
+				projectil.p[0] = shuttleSpeed.p[0]*.1;
+				projectil.p[1] = shuttleSpeed.p[1]*.1;
+				projectil.p[2] = 0;
+				projectilesDirection.push_back(projectil);
+			}
 		}
 		if (key == GLFW_KEY_UP) {
 			for(unsigned i = 0;i<5;i++){
@@ -307,12 +309,12 @@ double shuttleR = 1;
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(asteroids[i], radius[i]);
 		}
-		if(projectiles.size()>10){
+		/*if(projectiles.size()>10){
 			while(projectiles.size()>10){
 				projectiles.erase(projectiles.begin());
 				projectilesDirection.erase(projectilesDirection.begin());
 			}
-		}
+		}*/
 		for(unsigned i = 0; i<projectiles.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(projectiles[i], .1);
