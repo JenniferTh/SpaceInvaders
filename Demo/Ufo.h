@@ -23,11 +23,9 @@ public:
 	Ufo();
 	virtual ~Ufo();
     void DrawUfo();
-    void MoveUfo(Vec3 UfoSpeed);
-
+    bool collision(Vec3 ball, double r);
     //getters
     Vec3 GetSpitze();
-    Vec3 GetB();
     //setters
     void SetSpitze(Vec3 topVector, Vec3 speed);
 };

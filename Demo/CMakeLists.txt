@@ -46,3 +46,9 @@ set(SOURCES
     # add new source files here
 	  PARENT_SCOPE
 )
+
+project(SpaceInvaders)
+add_executable(SpaceInvaders main.cpp)
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
