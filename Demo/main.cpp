@@ -373,6 +373,7 @@ double shuttleR = 1;
 		glLoadIdentity();
 		//Ufo
 					Ufo Ufo1;
+					SetMaterialColor(3, 1, 0, 0);
 					Ufo1.DrawUfo();
 		glPushMatrix();
 			if(asteroids.size()<1){

@@ -19,6 +19,8 @@ double PunktB[3];
 double PunktC[3];
 double PunktD[3];
 
+double Spitze[3];
+
 
 Ufo::Ufo() {
 	// TODO Auto-generated constructor stub
@@ -27,50 +29,46 @@ Ufo::Ufo() {
 
 void Ufo::MoveUfo(){
 	//PunktA
-	PunktA[0] = PunktA[0]+1;
-	PunktA[1] = PunktA[1]+1;
-	PunktA[2] = PunktA[2]++;
+
 }
 
 // Date member function
 void Ufo::DrawUfo()
 {
 
-	double PunktA[] = {-0.6f, -0.4f, 10.f};
-	double PunktB[] = {PunktA[0]+0.6f, PunktA[1] +0.2f,  10.f};
-	double PunktC[] = {PunktA[0]+0.6f, PunktA[1] +1.2f,  10.f};
-	double PunktD[] = {PunktA[1]+1.0f, PunktA[1], PunktA[2]};
+	double Spitze[] = {0.0f , 0.6f ,10};
 
 	glPushMatrix();
 	glScalef(1, 1, 1);
-
 	glBegin(GL_TRIANGLES);
 	//glColor3f(1*0.55,1*0.55,1*0.55);
 	//Punkt A
-	glVertex3f(PunktA[0],PunktA[1],PunktA[2]);
-	//Punkt B
-	glVertex3f(PunktB[0],PunktB[1],PunktB[2]);
-	//Punkt C
-	glVertex3f(PunktC[0],PunktC[1],PunktC[2]);
+		glVertex3f(Spitze[0]-0.6f, Spitze[1]-1.f , Spitze[2]);
+	    glVertex3f(Spitze[0], Spitze[1]-0.8f, Spitze[2]);
+	    glVertex3f(Spitze[0], Spitze[1], Spitze[2]);
 
-	//Punkt D
-	glVertex3f(PunktD[0],PunktD[1],PunktD[2]);
-	//Punkt B
-	glVertex3f(PunktB[0],PunktB[1],PunktB[2]);
-	//Punkt C
-	glVertex3f(PunktC[0],PunktC[1],PunktC[2]);
+	    glVertex3f(0.6f, -0.4f, Spitze[2]);
+	    glVertex3f(0.f, -0.2f, Spitze[2]);
+	    glVertex3f(Spitze[0], Spitze[1], Spitze[2]);
 
-	//Punkt A
-	glVertex3f(PunktA[0],PunktA[1],PunktA[2]);
-	//Punkt B
-	glVertex3f(PunktB[0],PunktB[1],PunktB[2]);
-	//Punkt D
-	glVertex3f(PunktD[0],PunktD[1],PunktD[2]);
+	    glVertex3f(Spitze[0]-0.6f, Spitze[1]-1.0f, Spitze[2]);
+	    glVertex3f(Spitze[0], Spitze[1]-0.8f, Spitze[2]);
+	    glVertex3f(Spitze[0] +0.6f, Spitze[1] -1.f, Spitze[2]);
+
 	glEnd();
 	glPopMatrix();
 }
 
+double Ufo::getSpitze(){
+	return Spitze;
+}
 
+
+void Ufo::setSpitze(double x, double y, double z){
+	Spitze[0] = x;
+	Spitze[1] = y;
+	Spitze[2] = z;
+}
 
 
 Ufo::~Ufo() {

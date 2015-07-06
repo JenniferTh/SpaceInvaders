@@ -21,6 +21,17 @@ public:
     double PunktC[];
     double PunktD[];
 
+    double Spitze[];
+
+    double getSpitze(){
+    	return Spitze;
+    }
+
+
+
+    setSpitze(double x, double y, double z){
+
+    }
 
     const double* getPunktA() const {
     	return PunktA;
