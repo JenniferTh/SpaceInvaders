@@ -5,6 +5,8 @@
  *      Author: Malte
  */
 
+#include "vec3.hpp"
+
 #ifndef UFO_H_
 #define UFO_H_
 
@@ -16,40 +18,11 @@ public:
     void DrawUfo();
     void MoveUfo();
 
-    double PunktA[];
-    double PunktB[];
-    double PunktC[];
-    double PunktD[];
+    //getters
+    Vec3 GetSpitze();
 
-    double Spitze[];
-
-    double getSpitze(){
-    	return Spitze;
-    }
-
-
-
-    setSpitze(double x, double y, double z){
-
-    }
-
-    const double* getPunktA() const {
-    	return PunktA;
-    }
-
-	const double* getPunktB() const {
-		return PunktB;
-	}
-
-	const double* getPunktC() const {
-		return PunktC;
-	}
-
-	const double* getPunktD() const {
-		return PunktD;
-	}
-
-
+    //setters
+    void SetSpitze(Vec3 topVector);
 
 };
 

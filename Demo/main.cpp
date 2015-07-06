@@ -27,6 +27,9 @@ vector<Vec3> asteroidsSpeed;
 vector<double> radius;
 double speed = 1;
 
+
+Ufo ufo1;
+
 //Shuttle
 Vec3 shuttle(0,0,10);
 Vec3 shuttleSpeed(0.05,0.05,0);
@@ -372,9 +375,9 @@ double shuttleR = 1;
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		//Ufo
-					Ufo Ufo1;
+
 					SetMaterialColor(3, 1, 0, 0);
-					Ufo1.DrawUfo();
+					ufo1.DrawUfo();
 		glPushMatrix();
 			if(asteroids.size()<1){
 				insert();
