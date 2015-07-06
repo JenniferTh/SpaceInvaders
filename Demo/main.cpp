@@ -12,6 +12,8 @@
 #include <vector>
 #include "Ufo.h"
 #include <gl/glut.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 static double window_width_ = 1024;
@@ -400,10 +402,6 @@ int totalScore = 0;
 			SetMaterialColor(3, 1, 0, 0);
 			Ufo1.DrawUfo();
 			SetMaterialColor(3, 1, 1, 1);
-			std::string score;
-			//string str = "%i"+totalScore;
-			score = "Score: ";
-			drawScore(score.data(), score.size(), 10, 10);
 			if(asteroids.size()<1){
 				insert();
 				if(round<0){
@@ -445,6 +443,14 @@ int totalScore = 0;
 			}
 			glPopMatrix();
 	}
+
+	std::string int2str(int x) {
+		    // converts int to string
+		    std::stringstream ss;
+		    ss << x;
+		    return ss.str( );
+	}
+
 	int main() {
 		GLFWwindow* window = NULL;
 		printf("Here we go!\n");
@@ -472,6 +478,8 @@ int totalScore = 0;
 			glfwSetMouseButtonCallback(window, mouse_button_callback);
 			glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
 			//score ausgeben in main
+			std::string score = "Score: " + int2str(totalScore);
+			drawScore(score.data(), score.size(), 10, 10);
 			// make it appear (before this, it's hidden in the rear buffer)
 			glfwSwapBuffers(window);
 			glfwPollEvents();
