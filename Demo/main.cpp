@@ -275,10 +275,22 @@ int totalScore = 0;
 			elasticCollision(i, j);
 		}
 	}
-	void insertNewBall(double ra, Vec3 m, Vec3 s){
-		radius.push_back(ra);
-		asteroids.push_back(m);
-		asteroidsSpeed.push_back(s);
+	void insertNewBall(double ra, Vec3 m, Vec3 s, int j){
+		bool collide = false;
+		for(unsigned i = 0; i<asteroids.size();i++){
+			double distance = (asteroids[i]-m).LengthXY();
+			if (distance < 0) { distance = distance * -1; }
+			if(distance < radius[i] + ra){
+				if(i!=j){
+					collide = true;
+				}
+			}
+		}
+		if(collide==false){
+			radius.push_back(ra);
+			asteroids.push_back(m);
+			asteroidsSpeed.push_back(s);
+		}
 	}
 	bool collideProjectile(int i, int j){
 		double distance = pow(((asteroids[i].p[0]-projectiles[j].p[0])*(asteroids[i].p[0]-projectiles[j].p[0]))
@@ -288,15 +300,15 @@ int totalScore = 0;
 			projectiles.erase(projectiles.begin()+j);
 			projectilesDirection.erase(projectilesDirection.begin()+j);
 			if(radius[i]>=0.8){
-				insertNewBall(.6, Vec3(1,1,0)+asteroids[i],Vec3(0.001,0.001,0));
-				insertNewBall(.6, Vec3(-1,1,0)+asteroids[i],Vec3(-0.001,0.001,0));
-				insertNewBall(.6, Vec3(1,-1,0)+asteroids[i],Vec3(0.001,-0.001,0));
-				insertNewBall(.6, Vec3(-1,-1,0)+asteroids[i],Vec3(-0.001,-0.001,0));
+				insertNewBall(.6, Vec3(1,1,0)+asteroids[i],Vec3(0.001,0.001,0), i);
+				insertNewBall(.6, Vec3(-1,1,0)+asteroids[i],Vec3(-0.001,0.001,0), i);
+				insertNewBall(.6, Vec3(1,-1,0)+asteroids[i],Vec3(0.001,-0.001,0), i);
+				insertNewBall(.6, Vec3(-1,-1,0)+asteroids[i],Vec3(-0.001,-0.001,0), i);
 			}
 			asteroids.erase(asteroids.begin()+i);
 			asteroidsSpeed.erase(asteroidsSpeed.begin()+i);
 			radius.erase(radius.begin()+i);
-			totalScore+=3;
+			totalScore+=1;
 			return true;
 		}
 		return false;
