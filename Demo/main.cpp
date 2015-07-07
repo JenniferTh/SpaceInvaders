@@ -297,10 +297,10 @@ int totalScore = 0; //Score
 			projectilesSpeed.erase(projectilesSpeed.begin()+j);
 			if(radius[i]>=0.8){
 				//Wenn groﬂer Asteroid: vier neue Splitter erzeugen
-				insertNewBall(.6, Vec3(1,1,0)+asteroids[i],Vec3(0.001,0.001,0), i);
-				insertNewBall(.6, Vec3(-1,1,0)+asteroids[i],Vec3(-0.001,0.001,0), i);
-				insertNewBall(.6, Vec3(1,-1,0)+asteroids[i],Vec3(0.001,-0.001,0), i);
-				insertNewBall(.6, Vec3(-1,-1,0)+asteroids[i],Vec3(-0.001,-0.001,0), i);
+				insertNewBall(.6, Vec3(1,1,0)+asteroids[i],Vec3(randomDoubleBetween(0.0009, 0.0019),randomDoubleBetween(0.0009, 0.0019),0), i);
+				insertNewBall(.6, Vec3(-1,1,0)+asteroids[i],Vec3(randomDoubleBetween(-0.0019, -0.0009),randomDoubleBetween(0.0009, 0.0019),0), i);
+				insertNewBall(.6, Vec3(1,-1,0)+asteroids[i],Vec3(randomDoubleBetween(0.0009, 0.0019),randomDoubleBetween(-0.0019, -0.0009),0), i);
+				insertNewBall(.6, Vec3(-1,-1,0)+asteroids[i],Vec3(randomDoubleBetween(-0.0019, -0.0009),randomDoubleBetween(-0.0019, -0.0009),0), i);
 			}
 			asteroids.erase(asteroids.begin()+i);
 			asteroidsSpeed.erase(asteroidsSpeed.begin()+i);
