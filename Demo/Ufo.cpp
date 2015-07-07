@@ -31,7 +31,6 @@ void Ufo::DrawUfo()
 	glPushMatrix();
 	glScalef(1, 1, 1);
 	glBegin(GL_TRIANGLES);
-	//glColor3f(1*0.55,1*0.55,1*0.55);
 	//Fläche Links
 		glVertex3f(Spitze.p[0]-0.4, Spitze.p[1]-1 , Spitze.p[2]);
 	    glVertex3f(Spitze.p[0], Spitze.p[1]-1, Spitze.p[2]);
@@ -64,6 +63,7 @@ bool Ufo::collision(Vec3 ball, double r){
 		return true;
 	}
 	return false;
+	//Prüft ob der übergebene Asteroid mit dem der Sphere um das Raumschiff kollidiert
 }
 
 Ufo::~Ufo() {
