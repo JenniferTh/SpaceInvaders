@@ -414,6 +414,12 @@ int totalScore = 0; //Score
 		 	//Erzeugen der Asterioden mit random Geschwindigkeiten, Größen und Mittelpunkten
 		}
 	}
+	std::string int2str(int x) {
+		    // converts int to string
+		    std::stringstream ss;
+		    ss << x;
+		    return ss.str( );
+	}
 	void Preview() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
@@ -456,13 +462,17 @@ int totalScore = 0; //Score
 			move();
 			//Bewegen der Objekte
 			glPopMatrix();
+			//score ausgeben in main
+			SetMaterialColor(0, 1, 1, 1);
+			std::string score = "Score: " + int2str(totalScore);
+			drawScore(score.data(), score.size(), 10, 10);
+			if(rou==-10){
+				SetMaterialColor(0, 1, 1, 1);
+				std::string score = "Game Over";
+				drawScore(score.data(), score.size(), 350, 300);
+			}
 	}
-	std::string int2str(int x) {
-		    // converts int to string
-		    std::stringstream ss;
-		    ss << x;
-		    return ss.str( );
-	}
+
 	int main() {
 		GLFWwindow* window = NULL;
 		printf("Here we go!\n");
@@ -487,9 +497,6 @@ int totalScore = 0; //Score
 			//Listener
 			glfwSetKeyCallback(window, key_callback);
 			glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
-			//score ausgeben in main
-			std::string score = "Score: " + int2str(totalScore);
-			drawScore(score.data(), score.size(), 10, 10);
 			// make it appear (before this, it's hidden in the rear buffer)
 			glfwSwapBuffers(window);
 			glfwPollEvents();
