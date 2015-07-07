@@ -16,33 +16,31 @@
 #include <sstream>
 
 using namespace std;
-static double window_width_ = 1024;
-static double window_height_ = 768;
-static double xpos;
-static double ypos = -10; //Maus Position//Rotation
-double w1RSpeed = 4;
-static double alpha_1 = 0;
+static double window_width_ = 1024; //Fenster Breite
+static double window_height_ = 768; //Fenster Höhe
+static double alpha_1 = 0; //Rotation Koordinatensystem
 static double alpha_2 = 0;
-int rou = 0;
+int rou = 0; //Counter für die Anzahl der Runde, in der man sich befindet
 
 //Asteriods
-vector<Vec3> asteroids;
-vector<Vec3> asteroidsSpeed;
-vector<double> radius;
-double speed = 2;
+vector<Vec3> asteroids; //Vec3 Objekte die Mittelpunkte der Asteroiden kennzeichnen
+vector<Vec3> asteroidsSpeed; //Vec3 Objekte mit Geschwindigkeiten der Asteroiden
+vector<double> radius; //Vector mit Radien aller Asteroiden
+double speed = 3; //Geschwindigkeit der Asteroiden
 
 //Shuttle
-Ufo Ufo1;
-Vec3 shuttleSpeed(0.1,0.1,0);
-vector<Vec3> projectiles;
-vector<Vec3> projectilesDirection;
+Ufo Ufo1; //Ufo-Objekt
+Vec3 ufoSpeed(0.1,0.1,0); //Geschwindigkeit des Ufos
+vector<Vec3> projectiles; //Alle Geschosse eines Ufos
+vector<Vec3> projectilesSpeed; //Geschwindigkeit der Geschosse
+double speedProjectil = 0.3; //Anpassung der Projectilgeschwindigkeit
 
-double shuttleR = 1;
-int totalScore = 0;
+int totalScore = 0; //Score
 
 	void DrawSphere(const Vec3& ctr, double r){
 	int i, j,
 	n1 = 12, n2 = 24;
+	//Höhere Auflösung
 	Vec3 normal, v1;
 	double a1, a1d = M_PI / n1,
 	a2, a2d = M_PI / n2,
@@ -129,116 +127,111 @@ int totalScore = 0;
 		glMaterialf( mat, GL_SHININESS, 20);
 	}
 	void elasticCollision(int i, int j){
-
 		double mass1 = radius[i];
 		double mass2 = radius[j];
-
+		/*Massen der Kugeln*/
 		double newSpeedX2 = (2*mass1*asteroidsSpeed[i].p[0]+asteroidsSpeed[j].p[0]*(mass2-mass1)) / (mass1 + mass2);
 		double newSpeedX1 = (2*mass2*asteroidsSpeed[j].p[0]+asteroidsSpeed[i].p[0]*(mass1-mass2)) / (mass1 + mass2);
 		double newSpeedY2 = (2*mass1*asteroidsSpeed[i].p[1]+asteroidsSpeed[j].p[1]*(mass2-mass1)) / (mass1 + mass2);
 		double newSpeedY1 = (2*mass2*asteroidsSpeed[j].p[1]+asteroidsSpeed[i].p[1]*(mass1-mass2)) / (mass1 + mass2);
-
+		/*Neue Geschwindigkeiten anhand der alten Geschwindigkeiten und der Massen der Kugel berechnet*/
 		asteroidsSpeed[i].p[0] = newSpeedX1;
 		asteroidsSpeed[j].p[0] = newSpeedX2;
 		asteroidsSpeed[i].p[1] = newSpeedY1;
 		asteroidsSpeed[j].p[1] = newSpeedY2;
-
+		/*Neue Geschwindigkeiten setzten*/
 		asteroids[i].p[0] += newSpeedX1;
 		asteroids[j].p[0] += newSpeedX2;
 		asteroids[i].p[1] += newSpeedY1;
 		asteroids[j].p[1] += newSpeedY2;
+		/*auseinander setzten um erneute Kollison zu vermeiden*/
 	}
 	double randomDoubleBetween(double XMin, double XMax){
 		double X = XMin + rand() * (XMax - XMin) / RAND_MAX;
 		return X;
+		//Gibt ein double in der Range zwischen XMIn und XMAx aus
 	}
 	void collideRingFence(int i){
-		bool tausch;
-		if((asteroids[i].p[0]+radius[i])>=14+radius[i]+(2*radius[i])){
+		bool tausch; //prüft ob der Asteroid auf die andere seite versetzt werden muss
+		if((asteroids[i].p[0])>=14+(2*radius[i])){
 			tausch = true;
-		}else if((asteroids[i].p[0]-radius[i])<=-14-radius[i]-(2*radius[i])){
+		}else if((asteroids[i].p[0])<=-14-(2*radius[i])){
 			tausch = true;
-		}else if((asteroids[i].p[1]-radius[i])<=-9.5-radius[i]-(2*radius[i])){
+		}else if((asteroids[i].p[1])<=-9-(2*radius[i])){
 			tausch = true;
-		}else if((asteroids[i].p[1]+radius[i])>=9.5+radius[i]+(2*radius[i])){
+		}else if((asteroids[i].p[1])>=9+(2*radius[i])){
 			tausch = true;
 		}else{
 			tausch = false;
 		}
 		if(tausch==true){
-			bool moeglich = true;
+			bool moeglich = true; //Prüft, ob die neue Position belegt ist
 			for(unsigned j = 0;j<asteroids.size();j++){
-				Vec3 temp(-0.8*asteroids[i].p[0],-0.8*asteroids[i].p[1],asteroids[i].p[2]);
-
+				Vec3 temp(-0.9*asteroids[i].p[0],-0.9*asteroids[i].p[1],asteroids[i].p[2]);
+				//Vector erstellt mit den potentiell neuen Koordinaten
 				double distance = (temp-asteroids[j]).LengthXY();
 				if (distance < 0) { distance = distance * -1; }
-
 				if(distance < radius[i] + radius[j]){
 					moeglich = false;
 				}
-
 			}
 			if (moeglich) {
-				asteroids[i].p[0] *= -0.8;
-				asteroids[i].p[1] *= -0.8;
+				asteroids[i].p[0] *= -0.9;
+				asteroids[i].p[1] *= -0.9;
+				//Wenn der Tausch möglich ist, also kein anderer Asteroid an der neuen Position ist, wird das Objekt verschoben
 			}
-
-			tausch=false;
 		}
 	}
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
-		//Rotation
-		if (key == GLFW_KEY_W) alpha_1 -= w1RSpeed; //Hinten drehen
-		if (key == GLFW_KEY_A) alpha_2 -= w1RSpeed; //Vorne drehen
-		if (key == GLFW_KEY_S) alpha_1 += w1RSpeed; //Links drehen
-		if (key == GLFW_KEY_D) alpha_2 += w1RSpeed; //Rechts drehen
-
 		if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE){
 			SetMaterialColor(0, 0, .1, .1);
-			Vec3 projectil;
-			Vec3 tipShuttle = Ufo1.GetSpitze();
-			projectil.p[0] = tipShuttle.p[0];
-			projectil.p[1] = tipShuttle.p[1];
-			projectil.p[2] = 10;
+			Vec3 projectil = Ufo1.GetSpitze();
 			DrawSphere(projectil, .1);
 			projectiles.push_back(projectil);
-			projectil.p[1] = shuttleSpeed.p[1]*.3;
 			projectil.p[0] = 0;
+			projectil.p[1] = ufoSpeed.p[1]*speedProjectil;
 			projectil.p[2] = 0;
-			projectilesDirection.push_back(projectil);
+			projectilesSpeed.push_back(projectil);
+			//Erzeugen eines Projektils, mit der Position an der Spitze des Ufos und der Geschwindigkeit des Ufo mal eines Wertes
 		}
 		if (key == GLFW_KEY_RIGHT) {
 			for(int i = 0;i<5;i++){
 			Vec3 tipShuttle = Ufo1.GetSpitze();
-			tipShuttle.p[0] = tipShuttle.p[0]+shuttleSpeed.p[0];
-			Ufo1.SetSpitze(tipShuttle, shuttleSpeed);
+			tipShuttle.p[0] = tipShuttle.p[0]+ufoSpeed.p[0];
+			Ufo1.SetSpitze(tipShuttle, ufoSpeed);
 			}
+			//Bewegen des Ufos nach Rechts
 		}
 		if (key == GLFW_KEY_LEFT) {
 			for(int i = 0;i<5;i++){
 			Vec3 tipShuttle = Ufo1.GetSpitze();
-			tipShuttle.p[0] = tipShuttle.p[0]-shuttleSpeed.p[0];
-			Ufo1.SetSpitze(tipShuttle, shuttleSpeed);
+			tipShuttle.p[0] = tipShuttle.p[0]-ufoSpeed.p[0];
+			Ufo1.SetSpitze(tipShuttle, ufoSpeed);
 			}
+			//Bewegen des Ufos nach Links
 		}
 		if (key == GLFW_KEY_UP){
 			for(int i = 0;i<5;i++){
 			Vec3 tipShuttle = Ufo1.GetSpitze();
-			tipShuttle.p[1] = tipShuttle.p[1]+shuttleSpeed.p[1];
-			Ufo1.SetSpitze(tipShuttle, shuttleSpeed);
+			tipShuttle.p[1] = tipShuttle.p[1]+ufoSpeed.p[1];
+			Ufo1.SetSpitze(tipShuttle, ufoSpeed);
 			}
+			//Bewegen des Ufos nach Oben
 		}
 		if (key == GLFW_KEY_DOWN){
 			for(int i = 0;i<5;i++){
 			Vec3 tipShuttle = Ufo1.GetSpitze();
-			tipShuttle.p[1] = tipShuttle.p[1]-shuttleSpeed.p[0];
-			Ufo1.SetSpitze(tipShuttle, shuttleSpeed);
+			tipShuttle.p[1] = tipShuttle.p[1]-ufoSpeed.p[0];
+			Ufo1.SetSpitze(tipShuttle, ufoSpeed);
 			}
+			//Bewegen des Ufos nach Unten
 		}
-		if (key == GLFW_KEY_L) speed = 0;
-		if (key == GLFW_KEY_K) speed = 1;
-		if (key == GLFW_KEY_P) speed += 0.01;
-		if (key == GLFW_KEY_O) speed -= 0.01;
+
+		//Testfunktionen
+		if (key == GLFW_KEY_L) speed = 0; //Kugeln stoppen
+		if (key == GLFW_KEY_K) speed = 3; //Kugeln wieder auf Anfangsgeschwindigkeit setzen
+		if (key == GLFW_KEY_P) speed += 0.1; //Geschwindigkeit der Kugeln erhöhen
+		if (key == GLFW_KEY_O) speed -= 0.1; //Geschwindigkeit der Kugeln senken
 		if (key == GLFW_KEY_M) {
 			asteroids.clear();
 			radius.clear();
@@ -251,12 +244,9 @@ int totalScore = 0;
 				radius.push_back(r);
 				asteroids.push_back(m);
 				asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.005, 0.005),randomDoubleBetween(-0.005, 0.005),0));
-				//Vector asteriods von Vec3 zu Asteriods!!!
+				//Asteroiden resetten
 			}
 		}
-
-	}
-	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
 
 	}
 	void drawSquare( Vec3 seite1, Vec3 seite2, Vec3 seite3, Vec3 seite4){
@@ -267,6 +257,7 @@ int totalScore = 0;
 			glVertex3dv( seite3.p);
 			glVertex3dv( seite4.p);
 			glEnd();
+			//zeichnet Flächen
 	}
 	void collideBalls(int i, int j){
 		double distance = (asteroids[i]-asteroids[j]).LengthXY();
@@ -274,9 +265,12 @@ int totalScore = 0;
 		if(distance <= radius[i] + radius[j]){
 			elasticCollision(i, j);
 		}
+		//Kollison prüfen
 	}
 	void insertNewBall(double ra, Vec3 m, Vec3 s, int j){
+		//erzeugung eines Splitterasteroiden
 		bool collide = false;
+		//Abfrage ob an der Stelle, an der ein neuer Asteroid erzeugt werden soll, bereits einer vorhanden ist
 		for(unsigned i = 0; i<asteroids.size();i++){
 			double distance = (asteroids[i]-m).LengthXY();
 			if (distance < 0) { distance = distance * -1; }
@@ -290,16 +284,19 @@ int totalScore = 0;
 			radius.push_back(ra);
 			asteroids.push_back(m);
 			asteroidsSpeed.push_back(s);
+			//Ein Asteroid kann nur erzeugt werden, wenn der Platz frei ist
 		}
 	}
 	bool collideProjectile(int i, int j){
-		double distance = pow(((asteroids[i].p[0]-projectiles[j].p[0])*(asteroids[i].p[0]-projectiles[j].p[0]))
-				+((asteroids[i].p[1]-projectiles[j].p[1])*(asteroids[i].p[1]-projectiles[j].p[1])),2);
+		//Überprüft, ob ein Asteroid abgeschossen wurde
+		double distance = ((asteroids[i].p[0]-projectiles[j].p[0])*(asteroids[i].p[0]-projectiles[j].p[0]))
+				+((asteroids[i].p[1]-projectiles[j].p[1])*(asteroids[i].p[1]-projectiles[j].p[1]));
 		if (distance < 0) { distance = distance * -1; }
 		if(distance < radius[i] + 0.1){
 			projectiles.erase(projectiles.begin()+j);
-			projectilesDirection.erase(projectilesDirection.begin()+j);
+			projectilesSpeed.erase(projectilesSpeed.begin()+j);
 			if(radius[i]>=0.8){
+				//Wenn großer Asteroid: vier neue Splitter erzeugen
 				insertNewBall(.6, Vec3(1,1,0)+asteroids[i],Vec3(0.001,0.001,0), i);
 				insertNewBall(.6, Vec3(-1,1,0)+asteroids[i],Vec3(-0.001,0.001,0), i);
 				insertNewBall(.6, Vec3(1,-1,0)+asteroids[i],Vec3(0.001,-0.001,0), i);
@@ -313,46 +310,56 @@ int totalScore = 0;
 		}
 		return false;
 	}
-
 	void newLocation(int i){
 		asteroids[i].p[0] += asteroidsSpeed[i].p[0]*speed;
 		asteroids[i].p[1] += asteroidsSpeed[i].p[1]*speed;
-	}
-	void rotateShuttle(int angle){
-		shuttleSpeed.p[0] = cos(angle)*shuttleSpeed.p[0]-sin(angle)*shuttleSpeed.p[0];
-		shuttleSpeed.p[1] = sin(angle)*shuttleSpeed.p[1]-cos(angle)*shuttleSpeed.p[1];
+		//Bewegen des jeweiligen Asteroiden
 	}
 	void move(){
 		for(unsigned i = 0; i<asteroids.size();i++){
 			newLocation(i);
-			bool deleted;
+			//Bewegen der Asteroid
+			bool deleted; //Prüft, ob der Asteroid abgeschossen wurde
 			for(unsigned t = 0; t<projectiles.size(); t++){
 				if(collideProjectile(i, t)){
 					deleted = true;
+					//wenn er abgeschossen wurde deleted == true
 					break;
 				}
 			}
 			for(unsigned j = 0; j<asteroids.size();j++){
 				if(deleted==true){
-					//i--;
 					break;
+					//wenn der Asteroid bereits abgeschossen ist, wird die Überprüfung, ob er mit anderen Asteroiden kollidiert abgebrochen, da er nicht mehr existiert
 				}
 				if(i!=j){
 					collideBalls(i,j);
+					//Wenn der zu prüfende Asteroid nicht er selbst ist: Prüfung nach Kollsion
 				}
 			}
 			collideRingFence(i);
+			//Prüfungen, ob der Asteroid das Spielfeld verlassen hat
 		}
 		for(unsigned i = 0; i<projectiles.size();i++){
-			projectiles[i].p[0] +=projectilesDirection[i].p[0];
-			projectiles[i].p[1] +=projectilesDirection[i].p[1];
+			projectiles[i].p[0] +=projectilesSpeed[i].p[0];
+			projectiles[i].p[1] +=projectilesSpeed[i].p[1];
+			//Bewegung des Projektils
 			if(projectiles[i].p[0]<-14-.1||projectiles[i].p[0]>14+.1||projectiles[i].p[1]<-9-.1||projectiles[i].p[1]>9+.1){
 				projectiles.erase(projectiles.begin()+i-1);
-				projectilesDirection.erase(projectilesDirection.begin()+i-1);
+				projectilesSpeed.erase(projectilesSpeed.begin()+i-1);
+				//Hat das Projektil das Spielfeld verlassen, wird es gelöscht
+			}
+		}
+		for(unsigned i = 0;i<asteroids.size();i++){
+			if(Ufo1.collision(asteroids[i], radius[i])==true){
+				asteroids.clear();
+				radius.clear();
+				asteroidsSpeed.clear();
+				rou = -10;
+				//wenn das Ufo mit einem der Asteroiden kollidiert ist, wird die Runde auf -10 gesetzt und das Spiel ist somit vorbei, da keine neuen Asteroiden erzeugt werden können
 			}
 		}
 	}
-
 	void drawScore(const char *score, int length, int x, int y){
 		glMatrixMode(GL_PROJECTION);
 		double *matrix = new double[16];
@@ -377,18 +384,20 @@ int totalScore = 0;
 		for(unsigned i = 0; i<asteroids.size();i++){
 			SetMaterialColor(3, 1, 1, 1);
 			DrawSphere(asteroids[i], radius[i]);
+			//zeichnen der Asteroiden
 		}
 		if(projectiles.size()>10){
 			while(projectiles.size()>10){
 				projectiles.erase(projectiles.begin());
-				projectilesDirection.erase(projectilesDirection.begin());
+				projectilesSpeed.erase(projectilesSpeed.begin());
 			}
+			//Es können maximal 10 Geschosse auf dem Spielfeld sein
 		}
 		for(unsigned i = 0; i<projectiles.size();i++){
 			SetMaterialColor(3, .99, .1, .1);
 			DrawSphere(projectiles[i], .1);
+			//zeichnet alle Projektile
 		}
-
 	}
 	void insert(){
 		asteroids.clear();
@@ -402,31 +411,31 @@ int totalScore = 0;
 		 	radius.push_back(r);
 		 	asteroids.push_back(m);
 		 	asteroidsSpeed.push_back(Vec3(randomDoubleBetween(-0.005, 0.005),randomDoubleBetween(-0.005, 0.005),0));
-		 	//Vector asteriods von Vec3 zu Asteriods!!!
+		 	//Erzeugen der Asterioden mit random Geschwindigkeiten, Größen und Mittelpunkten
 		}
 	}
-
 	void Preview() {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		//Ufo
 		glPushMatrix();
-			SetMaterialColor(3, 1, 0, 0);
-			Ufo1.DrawUfo();
-			SetMaterialColor(3, 1, 1, 1);
+			SetMaterialColor(3, 0.9, 0.1, 0);
+			if(rou!=-10){
+				Ufo1.DrawUfo();
+			}
+			//Ufo gezeichnet. Wenn das Spiel vorbei ist (rou = -10), wird das Ufo nicht mehr gezeichnet
 			if(asteroids.size()<1){
 				insert();
 				if(round<0){
 					rou +=1;
 				}
+				//neue Runde wird generiert
 			}
 			glTranslated(0,0,-10);
-			//Rotation
 			glRotated(alpha_1, 1, 0, 0);
 			glRotated(alpha_2, 0, 1, 0);
 			glPushMatrix();
 			//Spielfeld
-			SetMaterialColor(0, 1, 1, 1);
+			SetMaterialColor(0, 0, 0, .15);
 			drawSquare(Vec3(-14,-9,0), Vec3(14,-9,0), Vec3(14,9,0), Vec3(-14,9,0));
 
 			SetMaterialColor(0, 0, 0, .1);
@@ -441,28 +450,19 @@ int totalScore = 0;
 			SetMaterialColor(0, 0, 0, .15);
 			drawSquare(Vec3(-14,9,5), Vec3(14,9,5), Vec3(14,12,5), Vec3(-14,12,5));
 
-			//Asteroid
 			glTranslated(0, 0, -10);
 			draw();
+			//Zeichnen der Objekte
 			move();
-			for(unsigned i = 0;i<asteroids.size();i++){
-				if(Ufo1.collision(asteroids[i], radius[i])==true){
-					asteroids.clear();
-					radius.clear();
-					asteroidsSpeed.clear();
-					rou = -10;
-				}
-			}
+			//Bewegen der Objekte
 			glPopMatrix();
 	}
-
 	std::string int2str(int x) {
 		    // converts int to string
 		    std::stringstream ss;
 		    ss << x;
 		    return ss.str( );
 	}
-
 	int main() {
 		GLFWwindow* window = NULL;
 		printf("Here we go!\n");
@@ -486,8 +486,6 @@ int totalScore = 0;
 			Preview();
 			//Listener
 			glfwSetKeyCallback(window, key_callback);
-			glfwGetCursorPos(window, &xpos, &ypos);
-			glfwSetMouseButtonCallback(window, mouse_button_callback);
 			glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
 			//score ausgeben in main
 			std::string score = "Score: " + int2str(totalScore);
